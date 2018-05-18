@@ -18,7 +18,7 @@ class TurnOn:
         self.lineColor   = args.get("LineColor", ROOT.kBlack)
         self.lineStyle   = args.get("LineStyle", 1)
         self.histo.SetName(self.name+"_histo")
-        self.fit.SetName(self.name+"_fit")
+	self.fit.SetName(self.name+"_fit")
 
 
 
@@ -26,7 +26,7 @@ class TurnOnPlot:
     def __init__(self, **args):
         self.name  = ""
         self.turnons = []
-        self.plotDir = "plots/"
+        self.plotDir = "plots"
         self.xRange = (10, 120)
         self.xTitle = "Offline p_{T}^{#tau} [GeV]"
         #self.legendPosition = (0.6,0.2,0.9,0.4)
@@ -47,6 +47,7 @@ class TurnOnPlot:
         hDummy.SetXTitle(self.xTitle)
         #hDummy.SetYTitle("Test")
         hDummy.SetYTitle("Efficiency")
+	hDummy.GetXaxis().SetMoreLogLabels()
         hDummy.Draw()
 
 
@@ -80,7 +81,9 @@ class TurnOnPlot:
         # lumi_num = float(cfg.readOption ("general::lumi"))
         # lumi_num = lumi_num/1000. # from pb-1 to fb-1
         # lumi = "%.1f fb^{-1} (13 TeV)" % lumi_num
-        lumi = "5.8 fb^{-1} (13 TeV, 2017)"
+        #lumi = "5.8 fb^{-1} (13 TeV, 2017)"
+	#lumi = "41.29 fb^{-1} (13 TeV, 2017)"
+	lumi = "Run 2017 (13 TeV)"
         lumibox = ROOT.TLatex  (0.953, 0.95, lumi)
         lumibox.SetNDC()
         lumibox.SetTextAlign(31)
@@ -92,6 +95,9 @@ class TurnOnPlot:
         legend.SetTextFont(42)
         legend.SetFillColor(0)
 	legend.SetTextSize(0.75*extraTextSize)
+	#legend.SetTextSize(0.9*extraTextSize)
+	legend.SetBorderSize(0)
+	legend.SetFillStyle(0)
         '''legend1 = ROOT.TLegend(0.14, 0.80, 0.80, 1.02)
         legend1.SetBorderSize(0)
         legend1.SetTextFont(62)
@@ -114,9 +120,9 @@ class TurnOnPlot:
             fit.SetLineColor(turnon.lineColor)
             fit.SetLineWidth(2)
             histo.Draw("p same")
-            fit.Draw("l same")
+            #fit.Draw("l same")
             # legends
-            legend.AddEntry(histo, turnon.legend, "pe")
+            legend.AddEntry(histo, turnon.legend, "pel")
             legend.Draw()
             #if self.name=="turnon_Stage1_Stage2_EB":
         #triggerNameBox.Draw()
