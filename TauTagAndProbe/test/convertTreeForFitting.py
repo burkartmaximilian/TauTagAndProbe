@@ -2,17 +2,19 @@ from ROOT import *
 import numpy as n
 
 # the hadd of all the output ntuples
-fname = "/data_CMS/cms/strebler/TauHLT/TagAndProbeTrees/TagAndProbe_VBF/NTuple_MC_VBF_BadPixGT_TandP.root"
+fname = "/storage/9/mburkart/Ntuplizer_MuTauTagAndProbe/NTuple_EmbeddedRun2017B.root"
+#fname = "/storage/9/mburkart/Ntuplizer_v1/MCFall17DY/NTuple_MC.root"
 #pt = [20, 26, 30, 34]
 pt = [20, 26, 30, 32, 34]
 numberOfHLTTriggers = 19
 
-saveOnlyOS = True # False; save only OS, True: save both and store weight for bkg sub
+saveOnlyOS = True # True; save only OS, False: save both and store weight for bkg sub
 
 #######################################################
 fIn = TFile.Open(fname)
 tIn = fIn.Get('Ntuplizer/TagAndProbe')
 tTriggerNames = fIn.Get("Ntuplizer/triggerNames")
+#outname = fname.replace ('.root', '_forFit.root')
 outname = fname.replace ('.root', '_forFit.root')
 fOut = TFile (outname, 'recreate')
 tOut = tIn.CloneTree(0)
@@ -22,7 +24,7 @@ briso   = [n.zeros(1, dtype=int) for x in range (0, len(pt))]
 brnoiso = [n.zeros(1, dtype=int) for x in range (0, len(pt))]
 bkgSubW = n.zeros(1, dtype=float)
 
-hltPathTriggered_OS   = [n.zeros(1, dtype=int) for x in range (0, numberOfHLTTriggers+1)]
+hltPathTriggered_OS = [n.zeros(1, dtype=int) for x in range (0, numberOfHLTTriggers+1)]
 
 for i in range (0, len(pt)):
     name = ("hasL1_" + str(pt[i]))
@@ -49,6 +51,18 @@ for ev in range (0, nentries):
 
     if saveOnlyOS and not tIn.isOS:
         continue
+    
+    #if tIn.mT <= 30.:
+    #    continue
+    
+    if tIn.mVis <= 40. or tIn.mVis >= 80. or tIn.mT >= 30.:
+        continue
+    # gen matching
+    #if tIn.tau_genindex != -1: 
+    #	continue
+    
+    if not tIn.isMatched:
+	continue
 
     for i in range (0, len(pt)):
         briso[i][0] = 0
@@ -70,13 +84,16 @@ for ev in range (0, nentries):
 
     triggerBits = tIn.tauTriggerBits
     HLTpt = tIn.hltPt
-    for bitIndex in range(0, numberOfHLTTriggers):
-        if bitIndex in range(6, 12):            
-            if ((triggerBits >> bitIndex) & 1) == 1 and (L1pt>=32) and (L1iso):
-                hltPathTriggered_OS[bitIndex][0] = 1
-        else:
-            if ((triggerBits >> bitIndex) & 1) == 1:
-                hltPathTriggered_OS[bitIndex][0] = 1
+    #for bitIndex in range(0, numberOfHLTTriggers):
+    #    if bitIndex in range(6, 12):            
+    #        if ((triggerBits >> bitIndex) & 1) == 1 and (L1pt>=32) and (L1iso):
+    #            hltPathTriggered_OS[bitIndex][0] = 1
+    #    else:
+    #        if ((triggerBits >> bitIndex) & 1) == 1:
+    #            hltPathTriggered_OS[bitIndex][0] = 1
+    for bitIndex in xrange(numberOfHLTTriggers):
+	if ((triggerBits >> bitIndex) & 1) == 1:
+            hltPathTriggered_OS[bitIndex][0] = 1
 
     bkgSubW[0] = 1. if tIn.isOS else -1.
 
