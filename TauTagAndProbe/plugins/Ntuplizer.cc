@@ -71,7 +71,7 @@ class Ntuplizer : public edm::EDAnalyzer {
         void Initialize();
         bool hasFilters(const pat::TriggerObjectStandAlone&  obj , const std::vector<std::string>& filtersToLookFor);
         int GenIndex(const pat::TauRef& tau, const edm::View<pat::GenericParticle>* genparts);
-  float ComputeMT (math::XYZTLorentzVector visP4, const pat::MET& met);
+        float ComputeMT (math::XYZTLorentzVector visP4, const pat::MET& met);
 
         bool _isMC;
 
@@ -95,24 +95,21 @@ class Ntuplizer : public edm::EDAnalyzer {
         float _mT;
         float _mVis;
         int _tau_genindex;        
+        float _tauTrkPt;
   
         bool _byLooseCombinedIsolationDeltaBetaCorr3Hits;
         bool _byMediumCombinedIsolationDeltaBetaCorr3Hits;
         bool _byTightCombinedIsolationDeltaBetaCorr3Hits;
-        bool _byVLooseIsolationMVArun2v1DBoldDMwLT;
-        bool _byLooseIsolationMVArun2v1DBoldDMwLT;
-        bool _byMediumIsolationMVArun2v1DBoldDMwLT;
-        bool _byTightIsolationMVArun2v1DBoldDMwLT;
-        bool _byVTightIsolationMVArun2v1DBoldDMwLT;
-        bool _byVLooseIsolationMVArun2v1DBnewDMwLT;
-        bool _byLooseIsolationMVArun2v1DBnewDMwLT;
-        bool _byMediumIsolationMVArun2v1DBnewDMwLT;
-        bool _byTightIsolationMVArun2v1DBnewDMwLT;
-        bool _byVTightIsolationMVArun2v1DBnewDMwLT;       
-        bool _byLooseIsolationMVArun2v1DBdR03oldDMwLT;
-        bool _byMediumIsolationMVArun2v1DBdR03oldDMwLT;
-        bool _byTightIsolationMVArun2v1DBdR03oldDMwLT;
-        bool _byVTightIsolationMVArun2v1DBdR03oldDMwLT;
+        bool _byVLooseIsolationMVArun2017v2DBoldDMwLT2017;
+        bool _byLooseIsolationMVArun2017v2DBoldDMwLT2017;
+        bool _byMediumIsolationMVArun2017v2DBoldDMwLT2017;
+        bool _byTightIsolationMVArun2017v2DBoldDMwLT2017;
+        bool _byVTightIsolationMVArun2017v2DBoldDMwLT2017;
+        bool _byVLooseIsolationMVArun2017v2DBnewDMwLT2017;
+        bool _byLooseIsolationMVArun2017v2DBnewDMwLT2017;
+        bool _byMediumIsolationMVArun2017v2DBnewDMwLT2017;
+        bool _byTightIsolationMVArun2017v2DBnewDMwLT2017;
+        bool _byVTightIsolationMVArun2017v2DBnewDMwLT2017;       
           
         bool _againstMuonLoose3;
         bool _againstMuonTight3;
@@ -164,6 +161,7 @@ class Ntuplizer : public edm::EDAnalyzer {
         Bool_t _isMatched;
         Bool_t _isOS;
         int _foundJet;
+        UInt_t _lastFilter;
         float _muonPt;
         float _muonEta;
         float _muonPhi;
@@ -199,6 +197,12 @@ class Ntuplizer : public edm::EDAnalyzer {
         HLTConfigProvider _hltConfig;
         HLTPrescaleProvider* _hltPrescale;
 
+        std::vector <std::string> _triggerModules;
+        TString _filterLabel;
+        TTree* _filterLabelsTree;
+        std::string _filterPath;
+        unsigned int _lastFilterInd;
+
 
 };
 
@@ -224,7 +228,8 @@ _L1EmuTauTag    (consumes<l1t::TauBxCollection>                   (iConfig.getPa
 _VtxTag         (consumes<std::vector<reco::Vertex>>              (iConfig.getParameter<edm::InputTag>("Vertexes"))),
 _puTag			(consumes<std::vector<PileupSummaryInfo>>		  (iConfig.getParameter<edm::InputTag>("puInfo"))),
 _hltL2CaloJet_ForIsoPix_Tag(consumes<reco::CaloJetCollection>     (iConfig.getParameter<edm::InputTag>("L2CaloJet_ForIsoPix_Collection"))),
-_hltL2CaloJet_ForIsoPix_IsoTag(consumes<reco::JetTagCollection>   (iConfig.getParameter<edm::InputTag>("L2CaloJet_ForIsoPix_IsoCollection")))
+_hltL2CaloJet_ForIsoPix_IsoTag(consumes<reco::JetTagCollection>   (iConfig.getParameter<edm::InputTag>("L2CaloJet_ForIsoPix_IsoCollection"))),
+_filterPath                                                       (iConfig.getParameter<std::string>  ("filterPath"))
 {
 
      _isMC = iConfig.getParameter<bool>("isMC");
@@ -239,6 +244,9 @@ _hltL2CaloJet_ForIsoPix_IsoTag(consumes<reco::JetTagCollection>   (iConfig.getPa
     edm::Service<TFileService> fs;
     _triggerNamesTree = fs -> make<TTree>("triggerNames", "triggerNames");
     _triggerNamesTree -> Branch("triggerNames",&triggerName);
+
+    _filterLabelsTree = fs -> make<TTree>("filterLabels", "filterLabels");
+    _filterLabelsTree -> Branch("filterLabels", &_filterLabel);
 
     //Building the trigger arrays
     const std::vector<edm::ParameterSet>& HLTList = iConfig.getParameter <std::vector<edm::ParameterSet> > ("triggerList");
@@ -304,11 +312,28 @@ void Ntuplizer::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup)
                 parameter.hltPathIndex = j;
 
                 std::cout << "### FOUND AT INDEX #" << j << " --> " << triggerNames[j] << std::endl;
+                // Look for the trigger filters running in this configuration.
+                if (hltPath==_filterPath)
+                {
+                    std::cout << hltPath << std::endl;
+                    _lastFilterInd = j;
+                    _filterPath.push_back('*');
+                }
             }
         }
         if (!found) parameter.hltPathIndex = -1;
     }
 
+    // Get trigger modules which ran with saveTags option, e.g. important EDFilters
+    _triggerModules = _hltConfig.saveTagsModules(_lastFilterInd);
+    std::cout << "Trigger modules with saved tags:" << std::endl;
+    for (const std::string triggerModule: _triggerModules)
+    {
+        std::cout << triggerModule << "   ";
+        _filterLabel = triggerModule;
+        _filterLabelsTree->Fill();
+    }
+    std::cout << std::endl;
 
 
     std::cout << " ===== LOOKING FOR THE PATH INDEXES FOR TAG=====" << std::endl;
@@ -345,24 +370,21 @@ void Ntuplizer::Initialize() {
     _mT = -1.;
     _mVis = -1.;
     _tau_genindex = -1;
+    _tauTrkPt = -1.;
     
     _byLooseCombinedIsolationDeltaBetaCorr3Hits = 0;
     _byMediumCombinedIsolationDeltaBetaCorr3Hits = 0;
     _byTightCombinedIsolationDeltaBetaCorr3Hits = 0;
-    _byVLooseIsolationMVArun2v1DBoldDMwLT = 0;
-    _byLooseIsolationMVArun2v1DBoldDMwLT = 0;
-    _byMediumIsolationMVArun2v1DBoldDMwLT = 0;
-    _byTightIsolationMVArun2v1DBoldDMwLT = 0;
-    _byVTightIsolationMVArun2v1DBoldDMwLT = 0;
-    _byVLooseIsolationMVArun2v1DBnewDMwLT = 0;
-    _byLooseIsolationMVArun2v1DBnewDMwLT = 0;
-    _byMediumIsolationMVArun2v1DBnewDMwLT = 0;
-    _byTightIsolationMVArun2v1DBnewDMwLT = 0;
-    _byVTightIsolationMVArun2v1DBnewDMwLT = 0;    
-    _byLooseIsolationMVArun2v1DBdR03oldDMwLT = 0;
-    _byMediumIsolationMVArun2v1DBdR03oldDMwLT = 0;
-    _byTightIsolationMVArun2v1DBdR03oldDMwLT = 0;
-    _byVTightIsolationMVArun2v1DBdR03oldDMwLT = 0;
+    _byVLooseIsolationMVArun2017v2DBoldDMwLT2017 = 0;
+    _byLooseIsolationMVArun2017v2DBoldDMwLT2017 = 0;
+    _byMediumIsolationMVArun2017v2DBoldDMwLT2017 = 0;
+    _byTightIsolationMVArun2017v2DBoldDMwLT2017 = 0;
+    _byVTightIsolationMVArun2017v2DBoldDMwLT2017 = 0;
+    _byVLooseIsolationMVArun2017v2DBnewDMwLT2017 = 0;
+    _byLooseIsolationMVArun2017v2DBnewDMwLT2017 = 0;
+    _byMediumIsolationMVArun2017v2DBnewDMwLT2017 = 0;
+    _byTightIsolationMVArun2017v2DBnewDMwLT2017 = 0;
+    _byVTightIsolationMVArun2017v2DBnewDMwLT2017 = 0;    
     
     _againstMuonLoose3 = 0;
     _againstMuonTight3 = 0;
@@ -416,6 +438,7 @@ void Ntuplizer::Initialize() {
     _l1tEmuRawEt = -1;
     _l1tEmuIsoEt = -1;
     _foundJet = 0;
+    _lastFilter = 0;
 }
 
 
@@ -440,24 +463,21 @@ void Ntuplizer::beginJob()
     _tree -> Branch("mT", &_mT, "mT/F");
     _tree -> Branch("mVis", &_mVis, "mVis/F");
     _tree -> Branch("tau_genindex", &_tau_genindex, "tau_genindex/I");
+    _tree -> Branch("tauTrkPt", &_tauTrkPt, "tauTrkPt/F");
     
     _tree -> Branch("byLooseCombinedIsolationDeltaBetaCorr3Hits", &_byLooseCombinedIsolationDeltaBetaCorr3Hits, "byLooseCombinedIsolationDeltaBetaCorr3Hits/O");
     _tree -> Branch("byMediumCombinedIsolationDeltaBetaCorr3Hits", &_byMediumCombinedIsolationDeltaBetaCorr3Hits, "byMediumCombinedIsolationDeltaBetaCorr3Hits/O");
     _tree -> Branch("byTightCombinedIsolationDeltaBetaCorr3Hits", &_byTightCombinedIsolationDeltaBetaCorr3Hits, "byTightCombinedIsolationDeltaBetaCorr3Hits/O");
-    _tree -> Branch("byVLooseIsolationMVArun2v1DBoldDMwLT", &_byVLooseIsolationMVArun2v1DBoldDMwLT, "byVLooseIsolationMVArun2v1DBoldDMwLT/O");
-    _tree -> Branch("byLooseIsolationMVArun2v1DBoldDMwLT", &_byLooseIsolationMVArun2v1DBoldDMwLT, "byLooseIsolationMVArun2v1DBoldDMwLT/O");
-    _tree -> Branch("byMediumIsolationMVArun2v1DBoldDMwLT", &_byMediumIsolationMVArun2v1DBoldDMwLT, "byMediumIsolationMVArun2v1DBoldDMwLT/O");
-    _tree -> Branch("byTightIsolationMVArun2v1DBoldDMwLT", &_byTightIsolationMVArun2v1DBoldDMwLT, "byTightIsolationMVArun2v1DBoldDMwLT/O");
-    _tree -> Branch("byVTightIsolationMVArun2v1DBoldDMwLT", &_byVTightIsolationMVArun2v1DBoldDMwLT, "byVTightIsolationMVArun2v1DBoldDMwLT/O");
-    _tree -> Branch("byVLooseIsolationMVArun2v1DBnewDMwLT", &_byVLooseIsolationMVArun2v1DBnewDMwLT, "byVLooseIsolationMVArun2v1DBnewDMwLT/O");
-    _tree -> Branch("byLooseIsolationMVArun2v1DBnewDMwLT", &_byLooseIsolationMVArun2v1DBnewDMwLT, "byLooseIsolationMVArun2v1DBnewDMwLT/O");
-    _tree -> Branch("byMediumIsolationMVArun2v1DBnewDMwLT", &_byMediumIsolationMVArun2v1DBnewDMwLT, "byMediumIsolationMVArun2v1DBnewDMwLT/O");
-    _tree -> Branch("byTightIsolationMVArun2v1DBnewDMwLT", &_byTightIsolationMVArun2v1DBnewDMwLT, "byTightIsolationMVArun2v1DBnewDMwLT/O");
-    _tree -> Branch("byVTightIsolationMVArun2v1DBnewDMwLT", &_byVTightIsolationMVArun2v1DBnewDMwLT, "byVTightIsolationMVArun2v1DBnewDMwLT/O");    
-    _tree -> Branch("byLooseIsolationMVArun2v1DBdR03oldDMwLT", &_byLooseIsolationMVArun2v1DBdR03oldDMwLT, "byLooseIsolationMVArun2v1DBdR03oldDMwLT/O");
-    _tree -> Branch("byMediumIsolationMVArun2v1DBdR03oldDMwLT", &_byMediumIsolationMVArun2v1DBdR03oldDMwLT, "byMediumIsolationMVArun2v1DBdR03oldDMwLT/O");
-    _tree -> Branch("byTightIsolationMVArun2v1DBdR03oldDMwLT", &_byTightIsolationMVArun2v1DBdR03oldDMwLT, "byTightIsolationMVArun2v1DBdR03oldDMwLT/O");
-    _tree -> Branch("byVTightIsolationMVArun2v1DBdR03oldDMwLT", &_byVTightIsolationMVArun2v1DBdR03oldDMwLT, "byVTightIsolationMVArun2v1DBdR03oldDMwLT/O");
+    _tree -> Branch("byVLooseIsolationMVArun2017v2DBoldDMwLT2017", &_byVLooseIsolationMVArun2017v2DBoldDMwLT2017, "byVLooseIsolationMVArun2017v2DBoldDMwLT2017/O");
+    _tree -> Branch("byLooseIsolationMVArun2017v2DBoldDMwLT2017", &_byLooseIsolationMVArun2017v2DBoldDMwLT2017, "byLooseIsolationMVArun2017v2DBoldDMwLT2017/O");
+    _tree -> Branch("byMediumIsolationMVArun2017v2DBoldDMwLT2017", &_byMediumIsolationMVArun2017v2DBoldDMwLT2017, "byMediumIsolationMVArun2017v2DBoldDMwLT2017/O");
+    _tree -> Branch("byTightIsolationMVArun2017v2DBoldDMwLT2017", &_byTightIsolationMVArun2017v2DBoldDMwLT2017, "byTightIsolationMVArun2017v2DBoldDMwLT2017/O");
+    _tree -> Branch("byVTightIsolationMVArun2017v2DBoldDMwLT2017", &_byVTightIsolationMVArun2017v2DBoldDMwLT2017, "byVTightIsolationMVArun2017v2DBoldDMwLT2017/O");
+    _tree -> Branch("byVLooseIsolationMVArun2017v2DBnewDMwLT2017", &_byVLooseIsolationMVArun2017v2DBnewDMwLT2017, "byVLooseIsolationMVArun2017v2DBnewDMwLT2017/O");
+    _tree -> Branch("byLooseIsolationMVArun2017v2DBnewDMwLT2017", &_byLooseIsolationMVArun2017v2DBnewDMwLT2017, "byLooseIsolationMVArun2017v2DBnewDMwLT2017/O");
+    _tree -> Branch("byMediumIsolationMVArun2017v2DBnewDMwLT2017", &_byMediumIsolationMVArun2017v2DBnewDMwLT2017, "byMediumIsolationMVArun2017v2DBnewDMwLT2017/O");
+    _tree -> Branch("byTightIsolationMVArun2017v2DBnewDMwLT2017", &_byTightIsolationMVArun2017v2DBnewDMwLT2017, "byTightIsolationMVArun2017v2DBnewDMwLT2017/O");
+    _tree -> Branch("byVTightIsolationMVArun2017v2DBnewDMwLT2017", &_byVTightIsolationMVArun2017v2DBnewDMwLT2017, "byVTightIsolationMVArun2017v2DBnewDMwLT2017/O");    
     
     
     _tree -> Branch("againstMuonLoose3", &_againstMuonLoose3, "againstMuonLoose3/O");;
@@ -523,6 +543,8 @@ void Ntuplizer::beginJob()
     _tree -> Branch("foundJet", &_foundJet, "foundJet/I");
     _tree -> Branch("Nvtx", &_Nvtx, "Nvtx/I");
     _tree -> Branch("nTruePU", &_nTruePU, "nTruePU/F");
+    _tree -> Branch("lastFilter", &_lastFilter, "lastFilter/I");
+
 
     return;
 }
@@ -592,7 +614,7 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& eSetup)
     _MET = met.pt();
     _mT = this->ComputeMT (muon->p4(), met);
 
-    if(muonHandle.isValid()) _isOS = (muon -> charge() / tau -> charge() < 0) ? true : false;
+    if(muonHandle.isValid()) _isOS = (muon->charge() / tau->charge() < 0) ? true : false;
 
 
     _tauTriggerBitSet.reset();
@@ -685,6 +707,23 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& eSetup)
 
 
         }
+        
+        if (obj.hasPathName(_filterPath, false, false))
+        {
+            for (std::vector<std::string>::reverse_iterator filterName = _triggerModules.rbegin(); filterName != _triggerModules.rend(); filterName+=1)
+            {
+                std::cout << *filterName << std::endl;
+                if (obj.hasFilterLabel(*filterName))
+                {
+                    std::cout << *filterName << std::endl;
+                    if (_triggerModules.rend() - filterName > _lastFilter)
+                    {
+                        _lastFilter = _triggerModules.rend() - filterName;
+                        std::cout << _lastFilter << std::endl;
+                    }
+                }
+            }
+        }
     }
 
 
@@ -769,28 +808,25 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& eSetup)
 	  }
       }
 
-    _tauPt = tau -> pt();
-    _tauEta = tau -> eta();
-    _tauPhi = tau -> phi();
-    _tauDM = tau -> decayMode();
+    _tauPt = tau->pt();
+    _tauEta = tau->eta();
+    _tauPhi = tau->phi();
+    _tauDM = tau->decayMode();
+    _tauTrkPt = tau->leadChargedHadrCand()->pt();
     
     _byLooseCombinedIsolationDeltaBetaCorr3Hits = tau->tauID("byLooseCombinedIsolationDeltaBetaCorr3Hits");
     _byMediumCombinedIsolationDeltaBetaCorr3Hits = tau->tauID("byMediumCombinedIsolationDeltaBetaCorr3Hits");
     _byTightCombinedIsolationDeltaBetaCorr3Hits = tau->tauID("byTightCombinedIsolationDeltaBetaCorr3Hits");
-    _byVLooseIsolationMVArun2v1DBoldDMwLT = tau->tauID("byVLooseIsolationMVArun2v1DBoldDMwLT");
-    _byLooseIsolationMVArun2v1DBoldDMwLT = tau->tauID("byLooseIsolationMVArun2v1DBoldDMwLT");
-    _byMediumIsolationMVArun2v1DBoldDMwLT = tau->tauID("byMediumIsolationMVArun2v1DBoldDMwLT");
-    _byTightIsolationMVArun2v1DBoldDMwLT = tau->tauID("byTightIsolationMVArun2v1DBoldDMwLT");
-    _byVTightIsolationMVArun2v1DBoldDMwLT = tau->tauID("byVTightIsolationMVArun2v1DBoldDMwLT");
-    _byVLooseIsolationMVArun2v1DBnewDMwLT = tau->tauID("byVLooseIsolationMVArun2v1DBnewDMwLT");
-    _byLooseIsolationMVArun2v1DBnewDMwLT = tau->tauID("byLooseIsolationMVArun2v1DBnewDMwLT");
-    _byMediumIsolationMVArun2v1DBnewDMwLT = tau->tauID("byMediumIsolationMVArun2v1DBnewDMwLT");
-    _byTightIsolationMVArun2v1DBnewDMwLT = tau->tauID("byTightIsolationMVArun2v1DBnewDMwLT");
-    _byVTightIsolationMVArun2v1DBnewDMwLT = tau->tauID("byVTightIsolationMVArun2v1DBnewDMwLT");
-    _byLooseIsolationMVArun2v1DBdR03oldDMwLT = tau->tauID("byLooseIsolationMVArun2v1DBdR03oldDMwLT");
-    _byMediumIsolationMVArun2v1DBdR03oldDMwLT = tau->tauID("byMediumIsolationMVArun2v1DBdR03oldDMwLT");
-    _byTightIsolationMVArun2v1DBdR03oldDMwLT = tau->tauID("byTightIsolationMVArun2v1DBdR03oldDMwLT");
-    _byVTightIsolationMVArun2v1DBdR03oldDMwLT = tau->tauID("byVTightIsolationMVArun2v1DBdR03oldDMwLT");
+    _byVLooseIsolationMVArun2017v2DBoldDMwLT2017 = tau->tauID("byVLooseIsolationMVArun2017v2DBoldDMwLT2017");
+    _byLooseIsolationMVArun2017v2DBoldDMwLT2017 = tau->tauID("byLooseIsolationMVArun2017v2DBoldDMwLT2017");
+    _byMediumIsolationMVArun2017v2DBoldDMwLT2017 = tau->tauID("byMediumIsolationMVArun2017v2DBoldDMwLT2017");
+    _byTightIsolationMVArun2017v2DBoldDMwLT2017 = tau->tauID("byTightIsolationMVArun2017v2DBoldDMwLT2017");
+    _byVTightIsolationMVArun2017v2DBoldDMwLT2017 = tau->tauID("byVTightIsolationMVArun2017v2DBoldDMwLT2017");
+    _byVLooseIsolationMVArun2017v2DBnewDMwLT2017 = tau->tauID("byVLooseIsolationMVArun2017v2DBnewDMwLT2017");
+    _byLooseIsolationMVArun2017v2DBnewDMwLT2017 = tau->tauID("byLooseIsolationMVArun2017v2DBnewDMwLT2017");
+    _byMediumIsolationMVArun2017v2DBnewDMwLT2017 = tau->tauID("byMediumIsolationMVArun2017v2DBnewDMwLT2017");
+    _byTightIsolationMVArun2017v2DBnewDMwLT2017 = tau->tauID("byTightIsolationMVArun2017v2DBnewDMwLT2017");
+    _byVTightIsolationMVArun2017v2DBnewDMwLT2017 = tau->tauID("byVTightIsolationMVArun2017v2DBnewDMwLT2017");
     
     _againstMuonLoose3 = tau->tauID("againstMuonLoose3");
     _againstMuonTight3 = tau->tauID("againstMuonTight3");
