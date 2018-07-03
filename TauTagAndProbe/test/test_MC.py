@@ -92,6 +92,15 @@ setattr(process,egmSeq,cms.Sequence(getattr(process,mvaMod)*getattr(process,egmM
 process.electrons = cms.Sequence(getattr(process,mvaMod)*getattr(process,egmMod)*getattr(process,regMod))
 
 
+#START RERUNNING OF ID TRAINING
+#
+# set up the rerunning of the latest tau id trainings 
+import TauTagAndProbe.TauTagAndProbe.runTauIdMVA as idemb
+na = idemb.TauIDEmbedder(process, cms,
+        debug=True,
+        toKeep=["2017v2", "newDM2017v2"]
+)
+na.runTauID()
 
 
 
@@ -106,13 +115,14 @@ if not isMC: # will use 80X
         ),
     )
 else:
-    process.GlobalTag.globaltag = '94X_mc2017_realistic_v14' #MC 25 ns miniAODv2
+    process.GlobalTag.globaltag = '94X_mc2017_realistic_v15' #MC 25 ns miniAODv2
     process.load('TauTagAndProbe.TauTagAndProbe.MCanalysis_cff')
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
 #            'file:///storage/b/akhmet/examples_files_2017/DYJetsToLLM50_ForMax.root'    
 #	     '/store/mc/RunIIFall17MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/00000/005DC030-D3F4-E711-889A-02163E01A62D.root'
-	     '/store/mc/RunIIFall17MiniAODv2/QCD_Pt_1000to1400_TuneCP5_13TeV_pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/00000/4CE7BB85-5B40-E811-AD91-0025905C3E68.root'
+#	     '/store/mc/RunIIFall17MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/RECOSIMstep_94X_mc2017_realistic_v10-v1/00000/705BBD66-52F2-E711-A8A1-001A648F189A.root'
+             'file:///storage/9/mburkart/ZprimeTest/EA4FB3A3-51ED-E711-85B1-0CC47A4D769A.root'
         )
     )
 
@@ -129,8 +139,10 @@ if options.inputFiles:
     process.source.fileNames = cms.untracked.vstring(options.inputFiles)
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
-)
+            input = cms.untracked.int32(-1)
+            )
+
+options.maxEvents = 10
 
 if options.maxEvents >= -1:
     process.maxEvents.input = cms.untracked.int32(options.maxEvents)
@@ -147,13 +159,15 @@ process.options = cms.untracked.PSet(
 
 process.p = cms.Path(
     process.electrons +
+    process.rerunMvaIsolationSequence +
+    process.NewTauIDsEmbedded +
     process.TAndPseq +
     process.NtupleSeq
 )
 
 # Silence output
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
 
 # Adding ntuplizer
 process.TFileService=cms.Service('TFileService',fileName=cms.string(options.outputFile))

@@ -92,25 +92,34 @@ setattr(process,egmSeq,cms.Sequence(getattr(process,mvaMod)*getattr(process,egmM
 process.electrons = cms.Sequence(getattr(process,mvaMod)*getattr(process,egmMod)*getattr(process,regMod))
 
 
+#START RERUNNING OF ID TRAINING
+#
+# set up the rerunning of the latest tau id trainings 
+import TauTagAndProbe.TauTagAndProbe.runTauIdMVA as idemb
+na = idemb.TauIDEmbedder(process, cms,
+        debug=True,
+        toKeep=["2017v2", "newDM2017v2"]
+)
+na.runTauID()
 
 
 
 if not isMC: # will use 80X
     from Configuration.AlCa.autoCond import autoCond
     process.GlobalTag.globaltag = '94X_dataRun2_v6'
-#    process.load('TauTagAndProbe.TauTagAndProbe.tagAndProbe_cff')
-    process.load('TauTagAndProbe.TauTagAndProbe.tagAndProbe_embedding_cff')
+    process.load('TauTagAndProbe.TauTagAndProbe.tagAndProbe_cff')
+#    process.load('TauTagAndProbe.TauTagAndProbe.tagAndProbe_embedding_cff')
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
 #             'file:///storage/b/akhmet/examples_files_2017/SingleMuon_ForMax.root'
-#             '/store/data/Run2017F/SingleMuon/MINIAOD/17Nov2017-v1/00000/3E7C07F9-E6F1-E711-841A-0CC47A4C8E46.root' 
+             '/store/data/Run2017F/SingleMuon/MINIAOD/17Nov2017-v1/00000/3E7C07F9-E6F1-E711-841A-0CC47A4C8E46.root' 
 #              'root://xrootd-cms.infn.it//store/data/Run2017F/SingleMuon/MINIAOD/17Nov2017-v1/70000/E6D654D2-08ED-E711-BEA2-02163E0141FE.root'
-              'root://xrootd-cms.infn.it//store/user/aakhmets/gc_storage/MuTau_data_2017_CMSSW944_gridka/TauEmbedding_MuTau_data_2017_CMSSW944_Run2017F/41/merged_6940.root'
+#              'root://xrootd-cms.infn.it//store/user/aakhmets/gc_storage/MuTau_data_2017_CMSSW944_gridka/TauEmbedding_MuTau_data_2017_CMSSW944_Run2017F/41/merged_6940.root'
        #      'root://xrootd-cms.infn.it//store/mc/RunIIFall17MiniAODv2/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/20000/96DDB778-784E-E811-BA60-008CFAC94020.root'
         ),
     )
 else:
-    process.GlobalTag.globaltag = '94X_mc2017_realistic_v14' #MC 25 ns miniAODv2
+    process.GlobalTag.globaltag = '94X_mc2017_realistic_v15' #MC 25 ns miniAODv2
     process.load('TauTagAndProbe.TauTagAndProbe.MCanalysis_cff')
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
@@ -123,8 +132,9 @@ if is2016 and not isMC:
     process.patTriggerUnpacker.patTriggerObjectsStandAlone = cms.InputTag("selectedPatTrigger","","RECO")
 
 
-
-#process.source.lumisToProcess = LumiList.LumiList(filename = 'Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt').getVLuminosityBlockRange()
+#if options.JSONfile:
+#    print "Using JSON: ", options.JSONfile
+#    process.source.lumisToProcess = LumiList.LumiList(filename = options.JSONfile).getVLuminosityBlockRange()
 
 if options.inputFiles:
     process.source.fileNames = cms.untracked.vstring(options.inputFiles)
@@ -139,6 +149,7 @@ if options.skipEvents >= 0:
     process.source.skipEvents = cms.untracked.uint32(options.skipEvents)
 
 
+print options.JSONfile
 
 process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True),
@@ -148,6 +159,8 @@ process.options = cms.untracked.PSet(
 
 process.p = cms.Path(
     process.electrons +
+    process.rerunMvaIsolationSequence +
+    process.NewTauIDsEmbedded +
     process.TAndPseq +
     process.NtupleSeq
 )
