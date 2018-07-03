@@ -2,6 +2,9 @@ import FWCore.ParameterSet.Config as cms
 
 print "Running on MC"
 
+# filter HLT paths for T&P
+import HLTrigger.HLTfilters.hltHighLevel_cfi as hlt
+
 
 HLTLIST_TAG = cms.VPSet(
     #MuTau SingleL1
@@ -149,8 +152,6 @@ HLTLIST = cms.VPSet(
 
 
 
-# filter HLT paths for T&P
-import HLTrigger.HLTfilters.hltHighLevel_cfi as hlt
 hltFilter = hlt.hltHighLevel.clone(
     TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
     HLTPaths = ['HLT_IsoMu27_v*'],
@@ -171,7 +172,6 @@ muonNumberFilter = cms.EDFilter ("muonNumberFilter",
     src = cms.InputTag("slimmedMuons")
 )
 
-
 ## good muons for T&P
 goodMuons = cms.EDFilter("PATMuonRefSelector",
         src = cms.InputTag("slimmedMuons"),
@@ -185,12 +185,12 @@ goodMuons = cms.EDFilter("PATMuonRefSelector",
 
 ## good taus - apply analysis selection
 goodTaus = cms.EDFilter("PATTauRefSelector",
-        src = cms.InputTag("slimmedTaus"),
+        src = cms.InputTag("NewTauIDsEmbedded"),
         cut = cms.string(
                 'pt > 20 && abs(eta) < 2.1 ' #kinematics
                 '&& abs(charge) > 0 && abs(charge) < 2 ' #sometimes 2 prongs have charge != 1
                 '&& tauID("decayModeFinding") > 0.5 ' # tau ID
-                '&& tauID("byMediumIsolationMVArun2v1DBoldDMwLT") > 0.5 ' # tau iso - NOTE: can as well use boolean discriminators with WP               
+                '&& tauID("byMediumIsolationMVArun2017v2DBoldDMwLT2017") > 0.5 ' # tau iso - NOTE: can as well use boolean discriminators with WP               
                 '&& tauID("againstMuonTight3") > 0.5 ' # anti Muon tight
                 '&& tauID("againstElectronVLooseMVA6") > 0.5 ' # anti-Ele loose
         ),
@@ -240,8 +240,8 @@ Ntuplizer = cms.EDAnalyzer("Ntuplizer",
     isMC = cms.bool(True),                           
     genCollection = cms.InputTag("generator"),
     genPartCollection = cms.InputTag("genInfo"),                           
-    muons = cms.InputTag("goodMuons"),
-    taus  = cms.InputTag("goodTaus"),
+    muons = cms.InputTag("TagAndProbe"),
+    taus = cms.InputTag("TagAndProbe"),
     puInfo = cms.InputTag("slimmedAddPileupInfo"), 
     met   = cms.InputTag("slimmedMETs"),
     triggerSet = cms.InputTag("patTriggerUnpacker"),
@@ -252,9 +252,9 @@ Ntuplizer = cms.EDAnalyzer("Ntuplizer",
     triggerList = HLTLIST,
     triggerList_tag = HLTLIST_TAG,
     L2CaloJet_ForIsoPix_Collection = cms.InputTag("hltL2TausForPixelIsolation", "", "TEST"),
-    L2CaloJet_ForIsoPix_IsoCollection = cms.InputTag("hltL2TauPixelIsoTagProducer", "", "TEST")   
+    L2CaloJet_ForIsoPix_IsoCollection = cms.InputTag("hltL2TauPixelIsoTagProducer", "", "TEST"),
+    filterPath = cms.string("HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1_v")
 )
-
 
 TAndPseq = cms.Sequence(
     hltFilter      +
