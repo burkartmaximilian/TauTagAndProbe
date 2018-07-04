@@ -17,6 +17,10 @@ class TurnOn:
         self.markerStyle = args.get("MarkerStyle", 20)
         self.lineColor   = args.get("LineColor", ROOT.kBlack)
         self.lineStyle   = args.get("LineStyle", 1)
+        self.drawOption  = args.get("drawOption", "")
+        self.fillColor   = args.get("FillColor", ROOT.kBlack)
+        self.fillStyle   = args.get("FillStyle", 1001)
+        self.legendOptions = args.get("LegendOptions", "")
         self.histo.SetName(self.name+"_histo")
 	self.fit.SetName(self.name+"_fit")
 
@@ -34,6 +38,8 @@ class TurnOnPlot:
         self.setPlotStyle()
         #self.triggerName = args.get("TriggerName", "Turn-On")
         self.triggerName = args.get("TriggerName", "")
+        self.lumi = ""
+        self.numLegCols = 1
 
     def addTurnOn(self, turnon):
         self.turnons.append(turnon)
@@ -82,8 +88,7 @@ class TurnOnPlot:
         # lumi_num = lumi_num/1000. # from pb-1 to fb-1
         # lumi = "%.1f fb^{-1} (13 TeV)" % lumi_num
         #lumi = "5.8 fb^{-1} (13 TeV, 2017)"
-	#lumi = "41.29 fb^{-1} (13 TeV, 2017)"
-	lumi = "Run 2017 (13 TeV)"
+	lumi = self.lumi + "(13 TeV, 2017)"
         lumibox = ROOT.TLatex  (0.953, 0.95, lumi)
         lumibox.SetNDC()
         lumibox.SetTextAlign(31)
@@ -93,11 +98,12 @@ class TurnOnPlot:
         #Line legend
         legend = ROOT.TLegend(self.legendPosition[0],self.legendPosition[1],self.legendPosition[2],self.legendPosition[3])
         legend.SetTextFont(42)
-        legend.SetFillColor(0)
-	legend.SetTextSize(0.75*extraTextSize)
+        legend.SetFillColor(10)
+	legend.SetTextSize(0.63*extraTextSize)
 	#legend.SetTextSize(0.9*extraTextSize)
 	legend.SetBorderSize(0)
-	legend.SetFillStyle(0)
+	legend.SetFillStyle(1001)
+        legend.SetNColumns(self.numLegCols)
         '''legend1 = ROOT.TLegend(0.14, 0.80, 0.80, 1.02)
         legend1.SetBorderSize(0)
         legend1.SetTextFont(62)
@@ -115,14 +121,17 @@ class TurnOnPlot:
             histo.SetMarkerStyle(turnon.markerStyle)
             histo.SetMarkerColor(turnon.markerColor)
             histo.SetLineColor(turnon.markerColor)
+            histo.SetLineStyle(turnon.lineStyle)
+            histo.SetFillColor(turnon.fillColor.GetNumber())
+            histo.SetFillStyle(turnon.fillStyle)
             fit = turnon.fit
             fit.SetLineStyle(turnon.lineStyle)
             fit.SetLineColor(turnon.lineColor)
             fit.SetLineWidth(2)
-            histo.Draw("p same")
+            histo.Draw("same" + turnon.drawOption)
             #fit.Draw("l same")
             # legends
-            legend.AddEntry(histo, turnon.legend, "pel")
+            legend.AddEntry(histo, turnon.legend, turnon.legendOptions)
             legend.Draw()
             #if self.name=="turnon_Stage1_Stage2_EB":
         #triggerNameBox.Draw()
@@ -132,6 +141,8 @@ class TurnOnPlot:
         #print ("DEBUG: " + self.plotDir+"/"+self.name+".eps")
         canvas.Print(self.plotDir+"/"+self.name+".pdf", "pdf")
         canvas.Print(self.plotDir+"/"+self.name+".png", "png")
+        canvas.Print(self.plotDir+"/"+self.name+".eps", "eps")
+        canvas.Print(self.plotDir+"/"+self.name+".svg", "svg")
         return canvas
 
 
