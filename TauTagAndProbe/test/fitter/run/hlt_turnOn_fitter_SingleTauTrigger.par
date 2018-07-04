@@ -1,0 +1,260 @@
+OutputFile: results/fitOutput_SingleTau_perDM.root
+NCPU: 5
+NoFit: true
+
+Turnon.N: 15
+
+##########################################################################################
+# MC Jet Fakes
+#########################################################################################
+Turnon.1.Name: MC_JetFakes_DM0
+Turnon.1.File: /storage/9/mburkart/Ntuplizer_SingleTau/NTuple_JetFakes_DM0_forFit.root
+Turnon.1.Tree: TagAndProbe
+Turnon.1.XVar: tauPt
+Turnon.1.Cut: hasHLTPath_16
+#Turnon.1.SelectionVars: RunNumber
+#Turnon.1.Selection: RunNumber<299368
+#Turnon.1.WeightVar: bkgSubW
+Turnon.1.Binning: 80 90 100 110 120 130 140 150 170 190 220 260 315 400 500 650 1000 5000
+Turnon.1.FitRange:0 5000
+Turnon.1.CB.Max: 1. 0.9 1.
+Turnon.1.CB.Alpha: 3. 0.01 50.
+Turnon.1.CB.N: 10. 1.001 100.
+Turnon.1.CB.Mean: 30. 0. 120.
+Turnon.1.CB.Sigma: 2. 0.01 10
+
+Turnon.2.Name: MC_JetFakes_DM1
+Turnon.2.File: /storage/9/mburkart/Ntuplizer_SingleTau/NTuple_JetFakes_DM1_forFit.root
+Turnon.2.Tree: TagAndProbe
+Turnon.2.XVar: tauPt
+Turnon.2.Cut: hasHLTPath_16
+#Turnon.2.SelectionVars: RunNumber
+#Turnon.2.Selection: RunNumber<299368
+#Turnon.2.WeightVar: bkgSubW
+Turnon.2.Binning: 80 90 100 110 120 130 140 150 170 190 220 260 315 400 500 650 1000 5000
+Turnon.2.FitRange:0 5000
+Turnon.2.CB.Max: 1. 0.9 1.
+Turnon.2.CB.Alpha: 3. 0.01 50.
+Turnon.2.CB.N: 10. 1.001 100.
+Turnon.2.CB.Mean: 30. 0. 120.
+Turnon.2.CB.Sigma: 2. 0.01 10
+
+Turnon.3.Name: MC_JetFakes_DM10
+Turnon.3.File: /storage/9/mburkart/Ntuplizer_SingleTau/NTuple_JetFakes_DM10_forFit.root
+Turnon.3.Tree: TagAndProbe
+Turnon.3.XVar: tauPt
+Turnon.3.Cut: hasHLTPath_16
+#Turnon.3.SelectionVars: RunNumber
+#Turnon.3.Selection: RunNumber<299368
+#Turnon.3.WeightVar: bkgSubW
+Turnon.3.Binning: 80 90 100 110 120 130 140 150 170 190 220 260 315 400 500 650 1000 5000
+Turnon.3.FitRange:0 5000
+Turnon.3.CB.Max: 1. 0.9 1.
+Turnon.3.CB.Alpha: 3. 0.01 50.
+Turnon.3.CB.N: 10. 1.001 100.
+Turnon.3.CB.Mean: 30. 0. 120.
+Turnon.3.CB.Sigma: 2. 0.01 10
+
+##########################################################################################
+# Data Jet Fakes
+#########################################################################################
+Turnon.4.Name: Data_JetFakes_DM0
+Turnon.4.File: /storage/9/mburkart/Ntuplizer_SingleTau/NTuple_Data_Full_JetEnriched_DM0_forFit.root
+Turnon.4.Tree: TagAndProbe
+Turnon.4.XVar: tauPt
+Turnon.4.Cut: hasHLTPath_16
+#Turnon.4.SelectionVars: RunNumber
+#Turnon.4.Selection: RunNumber<299368
+#Turnon.4.WeightVar: bkgSubW
+Turnon.4.Binning: 80 90 100 110 120 130 140 150 170 190 220 260 315 400 500 650 1000 5000
+Turnon.4.FitRange:0 5000
+Turnon.4.CB.Max: 1. 0.9 1.
+Turnon.4.CB.Alpha: 3. 0.01 50.
+Turnon.4.CB.N: 10. 1.001 100.
+Turnon.4.CB.Mean: 30. 0. 120.
+Turnon.4.CB.Sigma: 2. 0.01 10
+
+Turnon.5.Name: Data_JetFakes_DM1
+Turnon.5.File: /storage/9/mburkart/Ntuplizer_SingleTau/NTuple_Data_Full_JetEnriched_DM1_forFit.root
+Turnon.5.Tree: TagAndProbe
+Turnon.5.XVar: tauPt
+Turnon.5.Cut: hasHLTPath_16
+#Turnon.5.SelectionVars: RunNumber
+#Turnon.5.Selection: RunNumber<299368
+#Turnon.5.WeightVar: bkgSubW
+Turnon.5.Binning: 80 90 100 110 120 130 140 150 170 190 220 260 315 400 500 650 1000 5000
+Turnon.5.FitRange:0 5000
+Turnon.5.CB.Max: 1. 0.9 1.
+Turnon.5.CB.Alpha: 3. 0.01 50.
+Turnon.5.CB.N: 10. 1.001 100.
+Turnon.5.CB.Mean: 30. 0. 120.
+Turnon.5.CB.Sigma: 2. 0.01 10
+
+Turnon.6.Name: Data_JetFakes_DM10
+Turnon.6.File: /storage/9/mburkart/Ntuplizer_SingleTau/NTuple_Data_Full_JetEnriched_DM10_forFit.root
+Turnon.6.Tree: TagAndProbe
+Turnon.6.XVar: tauPt
+Turnon.6.Cut: hasHLTPath_16
+#Turnon.6.SelectionVars: RunNumber
+#Turnon.6.Selection: RunNumber<299368
+#Turnon.6.WeightVar: bkgSubW
+Turnon.6.Binning: 80 90 100 110 120 130 140 150 170 190 220 260 315 400 500 650 1000 5000
+Turnon.6.FitRange:0 5000
+Turnon.6.CB.Max: 1. 0.9 1.
+Turnon.6.CB.Alpha: 3. 0.01 50.
+Turnon.6.CB.N: 10. 1.001 100.
+Turnon.6.CB.Mean: 30. 0. 120.
+Turnon.6.CB.Sigma: 2. 0.01 10
+
+##########################################################################################
+# MC Electron Fakes
+#########################################################################################
+Turnon.7.Name: MC_ElectronFakes_DM0
+Turnon.7.File: /storage/9/mburkart/Ntuplizer_SingleTau/NTuple_DYJetsToLLM50EG_Trig35_looseMuCut_pT40_DM0_forFit.root
+Turnon.7.Tree: TagAndProbe
+Turnon.7.XVar: tauProbePt
+Turnon.7.Cut: hasHLTPath_0
+#Turnon.7.SelectionVars: RunNumber
+#Turnon.7.Selection: RunNumber<299368
+#Turnon.7.WeightVar: bkgSubW
+Turnon.7.Binning: 80 90 100 110 120 130 140 150 170 190 220 260 315 400 500 650 1000 5000
+Turnon.7.FitRange:0 5000
+Turnon.7.CB.Max: 1. 0.9 1.
+Turnon.7.CB.Alpha: 3. 0.01 50.
+Turnon.7.CB.N: 10. 1.001 100.
+Turnon.7.CB.Mean: 30. 0. 120.
+Turnon.7.CB.Sigma: 2. 0.01 10
+
+Turnon.8.Name: MC_ElectronFakes_DM1
+Turnon.8.File: /storage/9/mburkart/Ntuplizer_SingleTau/NTuple_DYJetsToLLM50EG_Trig35_looseMuCut_pT40_DM1_forFit.root
+Turnon.8.Tree: TagAndProbe
+Turnon.8.XVar: tauProbePt
+Turnon.8.Cut: hasHLTPath_0
+#Turnon.8.SelectionVars: RunNumber
+#Turnon.8.Selection: RunNumber<299868
+#Turnon.8.WeightVar: bkgSubW
+Turnon.8.Binning: 80 90 100 110 120 130 140 150 170 190 220 260 315 400 500 650 1000 5000
+Turnon.8.FitRange:0 5000
+Turnon.8.CB.Max: 1. 0.9 1.
+Turnon.8.CB.Alpha: 3. 0.01 50.
+Turnon.8.CB.N: 10. 1.001 100.
+Turnon.8.CB.Mean: 30. 0. 120.
+Turnon.8.CB.Sigma: 2. 0.01 10
+
+Turnon.9.Name: MC_ElectronFakes_DM10
+Turnon.9.File: /storage/9/mburkart/Ntuplizer_SingleTau/NTuple_DYJetsToLLM50EG_Trig35_looseMuCut_pT40_DM10_forFit.root
+Turnon.9.Tree: TagAndProbe
+Turnon.9.XVar: tauProbePt
+Turnon.9.Cut: hasHLTPath_0
+#Turnon.9.SelectionVars: RunNumber
+#Turnon.9.Selection: RunNumber<299368
+#Turnon.9.WeightVar: bkgSubW
+Turnon.9.Binning: 80 90 100 110 120 130 140 150 170 190 220 260 315 400 500 650 1000 5000
+Turnon.9.FitRange:0 5000
+Turnon.9.CB.Max: 1. 0.9 1.
+Turnon.9.CB.Alpha: 3. 0.01 50.
+Turnon.9.CB.N: 10. 1.001 100.
+Turnon.9.CB.Mean: 30. 0. 120.
+Turnon.9.CB.Sigma: 2. 0.01 10
+
+##########################################################################################
+# Data Electron Fakes
+#########################################################################################
+Turnon.10.Name: Data_ElectronFakes_DM0
+Turnon.10.File: /storage/9/mburkart/Ntuplizer_SingleTau/NTuple_SingleElectron_looseMuCut_pT40_DM0_forFit.root
+Turnon.10.Tree: TagAndProbe
+Turnon.10.XVar: tauProbePt
+Turnon.10.Cut: hasHLTPath_0
+#Turnon.10.SelectionVars: RunNumber
+#Turnon.10.Selection: RunNumber<299368
+#Turnon.10.WeightVar: bkgSubW
+Turnon.10.Binning: 80 90 100 110 120 130 140 150 170 190 220 260 315 400 500 650 1000 5000
+Turnon.10.FitRange:0 5000
+Turnon.10.CB.Max: 1. 0.9 1.
+Turnon.10.CB.Alpha: 3. 0.01 50.
+Turnon.10.CB.N: 10. 1.001 100.
+Turnon.10.CB.Mean: 30. 0. 120.
+Turnon.10.CB.Sigma: 2. 0.01 10
+
+Turnon.11.Name: Data_ElectronFakes_DM1
+Turnon.11.File: /storage/9/mburkart/Ntuplizer_SingleTau/NTuple_SingleElectron_looseMuCut_pT40_DM1_forFit.root
+Turnon.11.Tree: TagAndProbe
+Turnon.11.XVar: tauProbePt
+Turnon.11.Cut: hasHLTPath_0
+#Turnon.11.SelectionVars: RunNumber
+#Turnon.11.Selection: RunNumber<299368
+#Turnon.11.WeightVar: bkgSubW
+Turnon.11.Binning: 80 90 100 110 120 130 140 150 170 190 220 260 315 400 500 650 1000 5000
+Turnon.11.FitRange:0 5000
+Turnon.11.CB.Max: 1. 0.9 1.
+Turnon.11.CB.Alpha: 3. 0.01 50.
+Turnon.11.CB.N: 10. 1.001 100.
+Turnon.11.CB.Mean: 30. 0. 120.
+Turnon.11.CB.Sigma: 2. 0.01 10
+
+Turnon.12.Name: Data_ElectronFakes_DM10
+Turnon.12.File: /storage/9/mburkart/Ntuplizer_SingleTau/NTuple_SingleElectron_looseMuCut_pT40_DM10_forFit.root
+Turnon.12.Tree: TagAndProbe
+Turnon.12.XVar: tauProbePt
+Turnon.12.Cut: hasHLTPath_0
+#Turnon.12.SelectionVars: RunNumber
+#Turnon.12.Selection: RunNumber<299368
+#Turnon.12.WeightVar: bkgSubW
+Turnon.12.Binning: 80 90 100 110 120 130 140 150 170 190 220 260 315 400 500 650 1000 5000
+Turnon.12.FitRange:0 5000
+Turnon.12.CB.Max: 1. 0.9 1.
+Turnon.12.CB.Alpha: 3. 0.01 50.
+Turnon.12.CB.N: 10. 1.001 100.
+Turnon.12.CB.Mean: 30. 0. 120.
+Turnon.12.CB.Sigma: 2. 0.01 10
+
+##########################################################################################
+# MC Genuine Tau
+#########################################################################################
+Turnon.13.Name: MC_GenuineTau_DM0
+Turnon.13.File: /storage/9/mburkart/Ntuplizer_SingleTau/NTuple_ZprimeToTauTau_DM0_forFit.root
+Turnon.13.Tree: TagAndProbe
+Turnon.13.XVar: tauPt
+Turnon.13.Cut: hasHLTPath_16
+#Turnon.13.SelectionVars: RunNumber
+#Turnon.13.Selection: RunNumber<299368
+#Turnon.13.WeightVar: bkgSubW
+Turnon.13.Binning: 80 90 100 110 120 130 140 150 170 190 220 260 315 400 500 650 1000 5000
+Turnon.13.FitRange:0 5000
+Turnon.13.CB.Max: 1. 0.9 1.
+Turnon.13.CB.Alpha: 3. 0.01 50.
+Turnon.13.CB.N: 10. 1.001 100.
+Turnon.13.CB.Mean: 30. 0. 120.
+Turnon.13.CB.Sigma: 2. 0.01 10
+
+Turnon.14.Name: MC_GenuineTau_DM1
+Turnon.14.File: /storage/9/mburkart/Ntuplizer_SingleTau/NTuple_ZprimeToTauTau_DM1_forFit.root
+Turnon.14.Tree: TagAndProbe
+Turnon.14.XVar: tauPt
+Turnon.14.Cut: hasHLTPath_16
+#Turnon.14.SelectionVars: RunNumber
+#Turnon.14.Selection: RunNumber<299368
+#Turnon.14.WeightVar: bkgSubW
+Turnon.14.Binning: 80 90 100 110 120 130 140 150 170 190 220 260 315 400 500 650 1000 5000
+Turnon.14.FitRange:0 5000
+Turnon.14.CB.Max: 1. 0.9 1.
+Turnon.14.CB.Alpha: 3. 0.01 50.
+Turnon.14.CB.N: 10. 1.001 100.
+Turnon.14.CB.Mean: 30. 0. 120.
+Turnon.14.CB.Sigma: 2. 0.01 10
+
+Turnon.15.Name: MC_GenuineTau_DM10
+Turnon.15.File: /storage/9/mburkart/Ntuplizer_SingleTau/NTuple_ZprimeToTauTau_DM10_forFit.root
+Turnon.15.Tree: TagAndProbe
+Turnon.15.XVar: tauPt
+Turnon.15.Cut: hasHLTPath_16
+#Turnon.15.SelectionVars: RunNumber
+#Turnon.15.Selection: RunNumber<299368
+#Turnon.15.WeightVar: bkgSubW
+Turnon.15.Binning: 80 90 100 110 120 130 140 150 170 190 220 260 315 400 500 650 1000 5000
+Turnon.15.FitRange:0 5000
+Turnon.15.CB.Max: 1. 0.9 1.
+Turnon.15.CB.Alpha: 3. 0.01 50.
+Turnon.15.CB.N: 10. 1.001 100.
+Turnon.15.CB.Mean: 30. 0. 120.
+Turnon.15.CB.Sigma: 2. 0.01 10
