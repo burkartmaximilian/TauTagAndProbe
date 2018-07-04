@@ -55,6 +55,9 @@ TurnonFit::TurnonFit(const std::string& name):m_name(name),
     sn     << "n_"     << m_name;
     smean  << "mean_"  << m_name;
     ssigma << "sigma_" << m_name;
+    smturn << "mturn_" << m_name;
+    sp << "p_" << m_name;
+    swidth << "width_" << m_name;
     m_xVar .SetName(sxvar.str().c_str());
     m_max  .SetName(smax.str().c_str());
     m_alpha.SetName(salpha.str().c_str());
@@ -218,7 +221,7 @@ void TurnonFit::fit()
     m_fit->SetName(fitName.str().c_str());
 
     file->Close();
-    dataSet->Delete();
+    delete dataSet;
 
     printParameters();
 
@@ -235,8 +238,8 @@ void TurnonFit::save(TFile* outputFile)
     cName << "canvas_" << m_name;
     TCanvas* canvas = new TCanvas(cName.str().c_str(), cName.str().c_str(), 800, 800);
     canvas->SetGrid();
-    TH1F* dummy = new TH1F("test","test",300,0.,300.);
-    dummy->GetXaxis()->SetRangeUser(0.,300.);
+    TH1F* dummy = new TH1F("test","test",300,0.,1000.);
+    dummy->GetXaxis()->SetRangeUser(0.,1000.);
     dummy->GetXaxis()->SetTitle("p_{T}^{offl.} [GeV]");
     dummy->GetXaxis()->SetTitleOffset(1.3);
     dummy->GetYaxis()->SetTitle("L1 Efficiency");
@@ -251,6 +254,8 @@ void TurnonFit::save(TFile* outputFile)
     m_fit->Write();
     m_function->Write();
     if(!m_noFit) m_fitResult->Write();
+    delete canvas;
+    delete dummy;
 }
 
 
