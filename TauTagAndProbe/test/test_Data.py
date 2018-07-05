@@ -106,16 +106,17 @@ na.runTauID()
 
 if not isMC: # will use 80X
     from Configuration.AlCa.autoCond import autoCond
-    process.GlobalTag.globaltag = '94X_dataRun2_v6'
+    process.GlobalTag.globaltag = '94X_dataRun2_ReReco_EOY17_v6'
     process.load('TauTagAndProbe.TauTagAndProbe.tagAndProbe_cff')
 #    process.load('TauTagAndProbe.TauTagAndProbe.tagAndProbe_embedding_cff')
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
-#             'file:///storage/b/akhmet/examples_files_2017/SingleMuon_ForMax.root'
-             '/store/data/Run2017F/SingleMuon/MINIAOD/17Nov2017-v1/00000/3E7C07F9-E6F1-E711-841A-0CC47A4C8E46.root' 
+#              'file:///storage/b/akhmet/examples_files_2017/SingleMuon_ForMax.root'
+              '/store/data/Run2017C/SingleMuon/MINIAOD/31Mar2018-v1/90000/52CA671C-F836-E811-ABFF-FA163E09BE42.root',
+              '/store/data/Run2017C/SingleMuon/MINIAOD/31Mar2018-v1/90000/30A484BC-F636-E811-A5BE-FA163EBF307C.root'
 #              'root://xrootd-cms.infn.it//store/data/Run2017F/SingleMuon/MINIAOD/17Nov2017-v1/70000/E6D654D2-08ED-E711-BEA2-02163E0141FE.root'
 #              'root://xrootd-cms.infn.it//store/user/aakhmets/gc_storage/MuTau_data_2017_CMSSW944_gridka/TauEmbedding_MuTau_data_2017_CMSSW944_Run2017F/41/merged_6940.root'
-       #      'root://xrootd-cms.infn.it//store/mc/RunIIFall17MiniAODv2/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/20000/96DDB778-784E-E811-BA60-008CFAC94020.root'
+       #       'root://xrootd-cms.infn.it//store/mc/RunIIFall17MiniAODv2/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/20000/96DDB778-784E-E811-BA60-008CFAC94020.root'
         ),
     )
 else:

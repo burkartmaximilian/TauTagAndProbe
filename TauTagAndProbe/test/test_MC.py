@@ -106,7 +106,7 @@ na.runTauID()
 
 if not isMC: # will use 80X
     from Configuration.AlCa.autoCond import autoCond
-    process.GlobalTag.globaltag = '94X_dataRun2_v6'
+    process.GlobalTag.globaltag = '94X_dataRun2_ReReco_EOY17_v6'
     process.load('TauTagAndProbe.TauTagAndProbe.tagAndProbe_cff')
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
@@ -142,7 +142,7 @@ process.maxEvents = cms.untracked.PSet(
             input = cms.untracked.int32(-1)
             )
 
-options.maxEvents = 10
+options.maxEvents = -1
 
 if options.maxEvents >= -1:
     process.maxEvents.input = cms.untracked.int32(options.maxEvents)
@@ -167,7 +167,7 @@ process.p = cms.Path(
 
 # Silence output
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 # Adding ntuplizer
 process.TFileService=cms.Service('TFileService',fileName=cms.string(options.outputFile))
