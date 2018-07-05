@@ -54,12 +54,12 @@
 ██████  ███████  ██████ ███████ ██   ██ ██   ██ ██   ██    ██    ██  ██████  ██   ████
 */
 
-class Ntuplizer : public edm::EDAnalyzer {
+class NtuplizerTau : public edm::EDAnalyzer {
     public:
         /// Constructor
-        explicit Ntuplizer(const edm::ParameterSet&);
+        explicit NtuplizerTau(const edm::ParameterSet&);
         /// Destructor
-        virtual ~Ntuplizer();
+        virtual ~NtuplizerTau();
 
     private:
         //----edm control---
@@ -215,7 +215,7 @@ class Ntuplizer : public edm::EDAnalyzer {
 */
 
 // ----Constructor and Destructor -----
-Ntuplizer::Ntuplizer(const edm::ParameterSet& iConfig) :
+NtuplizerTau::NtuplizerTau(const edm::ParameterSet& iConfig) :
 _genTag         (consumes<GenEventInfoProduct>                    (iConfig.getParameter<edm::InputTag>("genCollection"))),
 _genPartTag     (consumes<edm::View<pat::GenericParticle>>        (iConfig.getParameter<edm::InputTag>("genPartCollection"))),
 _muonsTag       (consumes<pat::MuonRefVector>                     (iConfig.getParameter<edm::InputTag>("muons"))),
@@ -280,12 +280,12 @@ _filterPath                                                       (iConfig.getPa
     return;
 }
 
-Ntuplizer::~Ntuplizer()
+NtuplizerTau::~NtuplizerTau()
 {
     delete _hltPrescale;
 }
 
-void Ntuplizer::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup)
+void NtuplizerTau::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup)
 {
     Bool_t changedConfig = false;
 
@@ -315,9 +315,7 @@ void Ntuplizer::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup)
                 // Look for the trigger filters running in this configuration.
                 if (hltPath==_filterPath)
                 {
-                    std::cout << hltPath << std::endl;
                     _lastFilterInd = j;
-                    _filterPath.push_back('*');
                 }
             }
         }
@@ -326,14 +324,11 @@ void Ntuplizer::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup)
 
     // Get trigger modules which ran with saveTags option, e.g. important EDFilters
     _triggerModules = _hltConfig.saveTagsModules(_lastFilterInd);
-    std::cout << "Trigger modules with saved tags:" << std::endl;
     for (const std::string triggerModule: _triggerModules)
     {
-        std::cout << triggerModule << "   ";
         _filterLabel = triggerModule;
         _filterLabelsTree->Fill();
     }
-    std::cout << std::endl;
 
 
     std::cout << " ===== LOOKING FOR THE PATH INDEXES FOR TAG=====" << std::endl;
@@ -342,7 +337,6 @@ void Ntuplizer::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup)
         bool found = false;
         for(unsigned int j=0; j < triggerNames.size(); j++)
         {
-	  // std::cout << triggerNames[j] << std::endl;
             if (triggerNames[j].find(hltPath) != std::string::npos) {
                 found = true;
                 parameter.hltPathIndex = j;
@@ -355,7 +349,7 @@ void Ntuplizer::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup)
 
 }
 
-void Ntuplizer::Initialize() {
+void NtuplizerTau::Initialize() {
     _indexevents = 0;
     _runNumber = 0;
     _lumi = 0;
@@ -442,7 +436,7 @@ void Ntuplizer::Initialize() {
 }
 
 
-void Ntuplizer::beginJob()
+void NtuplizerTau::beginJob()
 {
     edm::Service<TFileService> fs;
     _tree = fs -> make<TTree>(this -> _treeName.c_str(), this -> _treeName.c_str());
@@ -550,19 +544,19 @@ void Ntuplizer::beginJob()
 }
 
 
-void Ntuplizer::endJob()
+void NtuplizerTau::endJob()
 {
     return;
 }
 
 
-void Ntuplizer::endRun(edm::Run const& iRun, edm::EventSetup const& iSetup)
+void NtuplizerTau::endRun(edm::Run const& iRun, edm::EventSetup const& iSetup)
 {
     return;
 }
 
 
-void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& eSetup)
+void NtuplizerTau::analyze(const edm::Event& iEvent, const edm::EventSetup& eSetup)
 {
     this -> Initialize();
 
@@ -708,18 +702,15 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& eSetup)
 
         }
         
-        if (obj.hasPathName(_filterPath, false, false))
+        if (obj.hasPathName(_filterPath + "*", false, false))
         {
             for (std::vector<std::string>::reverse_iterator filterName = _triggerModules.rbegin(); filterName != _triggerModules.rend(); filterName+=1)
             {
-                std::cout << *filterName << std::endl;
                 if (obj.hasFilterLabel(*filterName))
                 {
-                    std::cout << *filterName << std::endl;
                     if (_triggerModules.rend() - filterName > _lastFilter)
                     {
                         _lastFilter = _triggerModules.rend() - filterName;
-                        std::cout << _lastFilter << std::endl;
                     }
                 }
             }
@@ -881,7 +872,7 @@ void Ntuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& eSetup)
 
 }
 
-bool Ntuplizer::hasFilters(const pat::TriggerObjectStandAlone&  obj , const std::vector<std::string>& filtersToLookFor) {
+bool NtuplizerTau::hasFilters(const pat::TriggerObjectStandAlone&  obj , const std::vector<std::string>& filtersToLookFor) {
 
     const std::vector<std::string>& eventLabels = obj.filterLabels();
     for (const std::string& filter : filtersToLookFor)
@@ -905,7 +896,7 @@ bool Ntuplizer::hasFilters(const pat::TriggerObjectStandAlone&  obj , const std:
 
 
 
-int Ntuplizer::GenIndex(const pat::TauRef& tau, const edm::View<pat::GenericParticle>* genparts){
+int NtuplizerTau::GenIndex(const pat::TauRef& tau, const edm::View<pat::GenericParticle>* genparts){
 	
   float dRmin = 1.0;
   int genMatchInd = -1;
@@ -953,7 +944,7 @@ int Ntuplizer::GenIndex(const pat::TauRef& tau, const edm::View<pat::GenericPart
 
 
 
-float Ntuplizer::ComputeMT (math::XYZTLorentzVector visP4, const pat::MET& met)
+float NtuplizerTau::ComputeMT (math::XYZTLorentzVector visP4, const pat::MET& met)
 {
   math::XYZTLorentzVector METP4 (met.pt()*TMath::Cos(met.phi()), met.pt()*TMath::Sin(met.phi()), 0, met.pt());
   float scalSum = met.pt() + visP4.pt();
@@ -968,6 +959,6 @@ float Ntuplizer::ComputeMT (math::XYZTLorentzVector visP4, const pat::MET& met)
 
 
 #include <FWCore/Framework/interface/MakerMacros.h>
-DEFINE_FWK_MODULE(Ntuplizer);
+DEFINE_FWK_MODULE(NtuplizerTau);
 
 #endif //NTUPLIZER_H

@@ -222,7 +222,7 @@ patTriggerUnpacker = cms.EDProducer("PATTriggerObjectStandAloneUnpacker",
                                     unpackFilterLabels = cms.bool(True)
                                     )
 
-Ntuplizer = cms.EDAnalyzer("Ntuplizer",
+Ntuplizer = cms.EDAnalyzer("NtuplizerTau",
     treeName = cms.string("TagAndProbe"),
     isMC = cms.bool(False),
     genCollection = cms.InputTag(""),

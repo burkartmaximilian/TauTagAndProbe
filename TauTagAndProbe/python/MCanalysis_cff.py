@@ -235,7 +235,7 @@ patTriggerUnpacker = cms.EDProducer("PATTriggerObjectStandAloneUnpacker",
 
 
 # Ntuplizer.taus = cms.InputTag("genMatchedTaus")
-Ntuplizer = cms.EDAnalyzer("Ntuplizer",
+Ntuplizer = cms.EDAnalyzer("NtuplizerTau",
     treeName = cms.string("TagAndProbe"),
     isMC = cms.bool(True),                           
     genCollection = cms.InputTag("generator"),
