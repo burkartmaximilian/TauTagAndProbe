@@ -1,5 +1,5 @@
-#ifndef NTUPLIZER_H
-#define NTUPLIZER_H
+#ifndef NTUPLIZERTAU_H
+#define NTUPLIZERTAU_H
 
 #include <cmath>
 #include <vector>
