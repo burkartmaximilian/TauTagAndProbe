@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    QCDTagAndProbe/QCDTagAndProbe
+// Package:    TauTagAndProbe/VBFTagAndProbe
 // Class:      NtuplizerVBF
 // 
-/**\class NtuplizerVBF NtuplizerVBF.cc QCDTagAndProbe/QCDTagAndProbe/plugins/NtuplizerVBF.cc
+/**\class NtuplizerVBF NtuplizerVBF.cc TauTagAndProbe/VBFTagAndProbe/plugins/NtuplizerVBF.cc
 
  Description: [one line class summary]
 
@@ -11,8 +11,6 @@
      [Notes on implementation]
 */
 //
-// Original Author:  Maximilian Burkart
-//         Created:  Tue, 03 Jul 2018 12:50:23 GMT
 //
 //
 
