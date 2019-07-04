@@ -97,19 +97,41 @@ class NtuplizerTau : public edm::EDAnalyzer {
         int _tau_genindex;        
         float _tauTrkPt;
   
+        float _tauIsolationTracksPtSum;
+        float _tauIsolationEcalhitsEtSum;
+        float _tauIsolationPFChargedHadrCandsPtSum;
+        float _tauIsolationPFGammaCandsEtSum;
+        float _tauEmFraction;
+        float _tauEcalEnergy;
+        float _tauEcalStripSumEOverPLead;
+        float _tauMaximumHcalPFClusterEt;
+        float _tauHcalEnergy;
+        float _tauHcal3x3OverPLead;
+        float _tauHcalTotOverPLead;
+        float _tauEtaetaMoment;
+        float _tauEtaphiMoment;
+        float _tauPhiphiMoment;
+        float _tauBremsRecoveryEOverPLead;
+
         bool _byLooseCombinedIsolationDeltaBetaCorr3Hits;
         bool _byMediumCombinedIsolationDeltaBetaCorr3Hits;
         bool _byTightCombinedIsolationDeltaBetaCorr3Hits;
+        float _byIsolationMVArun2017v2DBoldDMwLTraw2017;
+        bool _byVVLooseIsolationMVArun2017v2DBoldDMwLT2017;
         bool _byVLooseIsolationMVArun2017v2DBoldDMwLT2017;
         bool _byLooseIsolationMVArun2017v2DBoldDMwLT2017;
         bool _byMediumIsolationMVArun2017v2DBoldDMwLT2017;
         bool _byTightIsolationMVArun2017v2DBoldDMwLT2017;
         bool _byVTightIsolationMVArun2017v2DBoldDMwLT2017;
+        bool _byVVTightIsolationMVArun2017v2DBoldDMwLT2017;
+        float _byIsolationMVArun2017v2DBnewDMwLTraw2017;
+        bool _byVVLooseIsolationMVArun2017v2DBnewDMwLT2017;
         bool _byVLooseIsolationMVArun2017v2DBnewDMwLT2017;
         bool _byLooseIsolationMVArun2017v2DBnewDMwLT2017;
         bool _byMediumIsolationMVArun2017v2DBnewDMwLT2017;
         bool _byTightIsolationMVArun2017v2DBnewDMwLT2017;
         bool _byVTightIsolationMVArun2017v2DBnewDMwLT2017;       
+        bool _byVVTightIsolationMVArun2017v2DBnewDMwLT2017;       
           
         bool _againstMuonLoose3;
         bool _againstMuonTight3;
@@ -365,20 +387,41 @@ void NtuplizerTau::Initialize() {
     _mVis = -1.;
     _tau_genindex = -1;
     _tauTrkPt = -1.;
+    _tauIsolationTracksPtSum = -1.;
+    _tauIsolationEcalhitsEtSum = -1.;
+    _tauIsolationPFChargedHadrCandsPtSum = -1.;
+    _tauIsolationPFGammaCandsEtSum = -1.;
+    _tauEmFraction = -1.;
+    _tauEcalEnergy = -1.;
+    _tauEcalStripSumEOverPLead = -1.;
+    _tauMaximumHcalPFClusterEt = -1.;
+    _tauHcalEnergy = -1.;
+    _tauHcal3x3OverPLead = -1.;
+    _tauHcalTotOverPLead = -1.;
+    _tauEtaetaMoment = -1.;
+    _tauEtaphiMoment = -1.;
+    _tauPhiphiMoment = -1.;
+    _tauBremsRecoveryEOverPLead = -1.;
     
     _byLooseCombinedIsolationDeltaBetaCorr3Hits = 0;
     _byMediumCombinedIsolationDeltaBetaCorr3Hits = 0;
     _byTightCombinedIsolationDeltaBetaCorr3Hits = 0;
+    _byIsolationMVArun2017v2DBoldDMwLTraw2017 = -1.;
+    _byVVLooseIsolationMVArun2017v2DBoldDMwLT2017 = 0;
     _byVLooseIsolationMVArun2017v2DBoldDMwLT2017 = 0;
     _byLooseIsolationMVArun2017v2DBoldDMwLT2017 = 0;
     _byMediumIsolationMVArun2017v2DBoldDMwLT2017 = 0;
     _byTightIsolationMVArun2017v2DBoldDMwLT2017 = 0;
     _byVTightIsolationMVArun2017v2DBoldDMwLT2017 = 0;
+    _byVVTightIsolationMVArun2017v2DBoldDMwLT2017 = 0;
+    _byIsolationMVArun2017v2DBnewDMwLTraw2017 = -1.;
+    _byVVLooseIsolationMVArun2017v2DBnewDMwLT2017 = 0;
     _byVLooseIsolationMVArun2017v2DBnewDMwLT2017 = 0;
     _byLooseIsolationMVArun2017v2DBnewDMwLT2017 = 0;
     _byMediumIsolationMVArun2017v2DBnewDMwLT2017 = 0;
     _byTightIsolationMVArun2017v2DBnewDMwLT2017 = 0;
     _byVTightIsolationMVArun2017v2DBnewDMwLT2017 = 0;    
+    _byVVTightIsolationMVArun2017v2DBnewDMwLT2017 = 0;    
     
     _againstMuonLoose3 = 0;
     _againstMuonTight3 = 0;
@@ -459,19 +502,41 @@ void NtuplizerTau::beginJob()
     _tree -> Branch("tau_genindex", &_tau_genindex, "tau_genindex/I");
     _tree -> Branch("tauTrkPt", &_tauTrkPt, "tauTrkPt/F");
     
+    _tree -> Branch("tauIsolationTracksPtSum", &_tauIsolationTracksPtSum, "tauIsolationTracksPtSum/F");
+    _tree -> Branch("tauIsolationEcalhitsEtSum", &_tauIsolationEcalhitsEtSum, "tauIsolationEcalhitsEtSum/F");
+    _tree -> Branch("tauIsolationPFChargedHadrCandsPtSum", &_tauIsolationPFChargedHadrCandsPtSum, "tauIsolationPFChargedHadrCandsPtSum/F");
+    _tree -> Branch("tauIsolationPFGammaCandsEtSum", &_tauIsolationPFGammaCandsEtSum, "tauIsolationPFGammaCandsEtSum/F");
+    _tree -> Branch("tauEmFraction", &_tauEmFraction, "tauEmFraction/F");
+    _tree -> Branch("tauEcalEnergy", &_tauEcalEnergy, "tauEcalEnergy/F");
+    _tree -> Branch("tauEcalStripSumEOverPLead", &_tauEcalStripSumEOverPLead, "tauEcalStripSumEOverPLead/F");
+    _tree -> Branch("tauMaximumHcalPFClusterEt", &_tauMaximumHcalPFClusterEt, "tauMaximumHcalPFClusterEt/F");
+    _tree -> Branch("tauHcalEnergy", &_tauHcalEnergy, "tauHcalEnergy/F");
+    _tree -> Branch("tauHcal3x3OverPLead", &_tauHcal3x3OverPLead, "tauHcal3x3OverPLead/F");
+    _tree -> Branch("tauHcalTotOverPLead", &_tauHcalTotOverPLead, "tauHcalTotOverPLead/F");
+    _tree -> Branch("tauEtaetaMoment", &_tauEtaetaMoment, "tauEtaetaMoment/F");
+    _tree -> Branch("tauEtaphiMoment", &_tauEtaphiMoment, "tauEtaphiMoment/F");
+    _tree -> Branch("tauPhiphiMoment", &_tauPhiphiMoment, "tauPhiphiMoment/F");
+    _tree -> Branch("tauBremsRecoveryEOverPLead", &_tauBremsRecoveryEOverPLead, "tauBremsRecoveryEOverPLead/F");
+
     _tree -> Branch("byLooseCombinedIsolationDeltaBetaCorr3Hits", &_byLooseCombinedIsolationDeltaBetaCorr3Hits, "byLooseCombinedIsolationDeltaBetaCorr3Hits/O");
     _tree -> Branch("byMediumCombinedIsolationDeltaBetaCorr3Hits", &_byMediumCombinedIsolationDeltaBetaCorr3Hits, "byMediumCombinedIsolationDeltaBetaCorr3Hits/O");
     _tree -> Branch("byTightCombinedIsolationDeltaBetaCorr3Hits", &_byTightCombinedIsolationDeltaBetaCorr3Hits, "byTightCombinedIsolationDeltaBetaCorr3Hits/O");
+    _tree -> Branch("byIsolationMVArun2017v2DBoldDMwLTraw2017", &_byIsolationMVArun2017v2DBoldDMwLTraw2017, "byIsolationMVArun2017v2DBoldDMwLTraw2017/F");
+    _tree -> Branch("byVVLooseIsolationMVArun2017v2DBoldDMwLT2017", &_byVVLooseIsolationMVArun2017v2DBoldDMwLT2017, "byVVLooseIsolationMVArun2017v2DBoldDMwLT2017/O");
     _tree -> Branch("byVLooseIsolationMVArun2017v2DBoldDMwLT2017", &_byVLooseIsolationMVArun2017v2DBoldDMwLT2017, "byVLooseIsolationMVArun2017v2DBoldDMwLT2017/O");
     _tree -> Branch("byLooseIsolationMVArun2017v2DBoldDMwLT2017", &_byLooseIsolationMVArun2017v2DBoldDMwLT2017, "byLooseIsolationMVArun2017v2DBoldDMwLT2017/O");
     _tree -> Branch("byMediumIsolationMVArun2017v2DBoldDMwLT2017", &_byMediumIsolationMVArun2017v2DBoldDMwLT2017, "byMediumIsolationMVArun2017v2DBoldDMwLT2017/O");
     _tree -> Branch("byTightIsolationMVArun2017v2DBoldDMwLT2017", &_byTightIsolationMVArun2017v2DBoldDMwLT2017, "byTightIsolationMVArun2017v2DBoldDMwLT2017/O");
     _tree -> Branch("byVTightIsolationMVArun2017v2DBoldDMwLT2017", &_byVTightIsolationMVArun2017v2DBoldDMwLT2017, "byVTightIsolationMVArun2017v2DBoldDMwLT2017/O");
+    _tree -> Branch("byVVTightIsolationMVArun2017v2DBoldDMwLT2017", &_byVVTightIsolationMVArun2017v2DBoldDMwLT2017, "byVVTightIsolationMVArun2017v2DBoldDMwLT2017/O");
+    _tree -> Branch("byIsolationMVArun2017v2DBnewDMwLTraw2017", &_byIsolationMVArun2017v2DBnewDMwLTraw2017, "byIsolationMVArun2017v2DBnewDMwLTraw2017/F");
+    _tree -> Branch("byVVLooseIsolationMVArun2017v2DBnewDMwLT2017", &_byVVLooseIsolationMVArun2017v2DBnewDMwLT2017, "byVVLooseIsolationMVArun2017v2DBnewDMwLT2017/O");
     _tree -> Branch("byVLooseIsolationMVArun2017v2DBnewDMwLT2017", &_byVLooseIsolationMVArun2017v2DBnewDMwLT2017, "byVLooseIsolationMVArun2017v2DBnewDMwLT2017/O");
     _tree -> Branch("byLooseIsolationMVArun2017v2DBnewDMwLT2017", &_byLooseIsolationMVArun2017v2DBnewDMwLT2017, "byLooseIsolationMVArun2017v2DBnewDMwLT2017/O");
     _tree -> Branch("byMediumIsolationMVArun2017v2DBnewDMwLT2017", &_byMediumIsolationMVArun2017v2DBnewDMwLT2017, "byMediumIsolationMVArun2017v2DBnewDMwLT2017/O");
     _tree -> Branch("byTightIsolationMVArun2017v2DBnewDMwLT2017", &_byTightIsolationMVArun2017v2DBnewDMwLT2017, "byTightIsolationMVArun2017v2DBnewDMwLT2017/O");
     _tree -> Branch("byVTightIsolationMVArun2017v2DBnewDMwLT2017", &_byVTightIsolationMVArun2017v2DBnewDMwLT2017, "byVTightIsolationMVArun2017v2DBnewDMwLT2017/O");    
+    _tree -> Branch("byVVTightIsolationMVArun2017v2DBnewDMwLT2017", &_byVVTightIsolationMVArun2017v2DBnewDMwLT2017, "byVVTightIsolationMVArun2017v2DBnewDMwLT2017/O");    
     
     
     _tree -> Branch("againstMuonLoose3", &_againstMuonLoose3, "againstMuonLoose3/O");;
@@ -626,13 +691,13 @@ void NtuplizerTau::analyze(const edm::Event& iEvent, const edm::EventSetup& eSet
         const float dR = deltaR (*muon, obj);
         if ( dR < 0.5 && fabs(obj.eta())<2.1 ){
 
-	  for (const tParameterSet& parameter : _parameters_Tag)
+          for (const tParameterSet& parameter : _parameters_Tag)
             {
-	      if ((parameter.hltPathIndex >= 0)&&(obj.hasPathName(triggerNames[parameter.hltPathIndex], true, false)))	
-		foundMuTrigger = true;
-	    }
+              if ((parameter.hltPathIndex >= 0)&&(obj.hasPathName(triggerNames[parameter.hltPathIndex], true, false)))	
+        	foundMuTrigger = true;
+            }
 
-	}
+        }
 
       }
       
@@ -659,12 +724,16 @@ void NtuplizerTau::analyze(const edm::Event& iEvent, const edm::EventSetup& eSet
                     //Retrieving filter list for the event
 
                     const std::vector<std::string>& filters = (parameter.leg1 == 15)? (parameter.hltFilters1):(parameter.hltFilters2);
+                    for (auto filt : filters)
+                        std::cout << "Filter to check: " << filt << std::endl;
+
                     if (this -> hasFilters(obj, filters))
                     {
                         _hltPt[x] = obj.pt();
                         _hltEta[x] = obj.eta();
                         _hltPhi[x] = obj.phi();
                         _tauTriggerBitSet[x] = true;
+                        std::cout << "Filters found." << std::endl;
                     }
                 }
                 x++;
@@ -699,22 +768,22 @@ void NtuplizerTau::analyze(const edm::Event& iEvent, const edm::EventSetup& eSet
 	      _hltPFTau35TrackPt1RegPhi = obj.phi();
 	    }
 
-
-        }
-        
-        if (obj.hasPathName(_filterPath + "*", false, false))
-        {
-            for (std::vector<std::string>::reverse_iterator filterName = _triggerModules.rbegin(); filterName != _triggerModules.rend(); filterName+=1)
+            if (obj.hasPathName(_filterPath + "*", false, false))
             {
-                if (obj.hasFilterLabel(*filterName))
+                for (std::vector<std::string>::reverse_iterator filterName = _triggerModules.rbegin(); filterName != _triggerModules.rend(); filterName+=1)
                 {
-                    if (_triggerModules.rend() - filterName > _lastFilter)
+                    if (obj.hasFilterLabel(*filterName))
                     {
-                        _lastFilter = _triggerModules.rend() - filterName;
+                        if (_triggerModules.rend() - filterName > _lastFilter)
+                        {
+                            _lastFilter = _triggerModules.rend() - filterName;
+                        }
                     }
                 }
             }
+
         }
+        
     }
 
 
@@ -804,20 +873,41 @@ void NtuplizerTau::analyze(const edm::Event& iEvent, const edm::EventSetup& eSet
     _tauPhi = tau->phi();
     _tauDM = tau->decayMode();
     _tauTrkPt = tau->leadChargedHadrCand()->pt();
+    // _tauIsolationTracksPtSum = tau->isolationTracksPtSum();
+    // _tauIsolationEcalhitsEtSum = tau->isolationECALhitsEtSum();
+    // _tauIsolationPFChargedHadrCandsPtSum = tau->isolationPFChargedHadrCandsPtSum();
+    // _tauIsolationPFGammaCandsEtSum = tau->isolationPFGammaCandsEtSum();
+    // _tauEcalEnergy = tau->ecalEnergy();
+    // _tauEcalStripSumEOverPLead = tau->ecalStripSumEOverPLead();
+    // _tauEmFraction = tau->emFraction();
+    // _tauMaximumHcalPFClusterEt = tau->maximumHCALPFClusterEt();
+    // _tauHcalEnergy = tau->hcalEnergy();
+    // _tauHcal3x3OverPLead = tau->hcal3x3OverPLead();
+    // _tauHcalTotOverPLead = tau->hcalTotOverPLead();
+    // _tauEtaetaMoment = tau->etaetaMoment();
+    // _tauEtaphiMoment = tau->etaphiMoment();
+    // _tauPhiphiMoment = tau->phiphiMoment();
+    // _tauBremsRecoveryEOverPLead = tau->bremsRecoveryEOverPLead();
     
-    _byLooseCombinedIsolationDeltaBetaCorr3Hits = tau->tauID("byLooseCombinedIsolationDeltaBetaCorr3Hits");
-    _byMediumCombinedIsolationDeltaBetaCorr3Hits = tau->tauID("byMediumCombinedIsolationDeltaBetaCorr3Hits");
-    _byTightCombinedIsolationDeltaBetaCorr3Hits = tau->tauID("byTightCombinedIsolationDeltaBetaCorr3Hits");
+    _byIsolationMVArun2017v2DBoldDMwLTraw2017 = tau->tauID("byIsolationMVArun2017v2DBoldDMwLTraw2017");
+    _byVVLooseIsolationMVArun2017v2DBoldDMwLT2017 = tau->tauID("byVVLooseIsolationMVArun2017v2DBoldDMwLT2017");
     _byVLooseIsolationMVArun2017v2DBoldDMwLT2017 = tau->tauID("byVLooseIsolationMVArun2017v2DBoldDMwLT2017");
     _byLooseIsolationMVArun2017v2DBoldDMwLT2017 = tau->tauID("byLooseIsolationMVArun2017v2DBoldDMwLT2017");
     _byMediumIsolationMVArun2017v2DBoldDMwLT2017 = tau->tauID("byMediumIsolationMVArun2017v2DBoldDMwLT2017");
     _byTightIsolationMVArun2017v2DBoldDMwLT2017 = tau->tauID("byTightIsolationMVArun2017v2DBoldDMwLT2017");
     _byVTightIsolationMVArun2017v2DBoldDMwLT2017 = tau->tauID("byVTightIsolationMVArun2017v2DBoldDMwLT2017");
+    _byVVTightIsolationMVArun2017v2DBoldDMwLT2017 = tau->tauID("byVVTightIsolationMVArun2017v2DBoldDMwLT2017");
+    _byIsolationMVArun2017v2DBnewDMwLTraw2017 = tau->tauID("byIsolationMVArun2017v2DBnewDMwLTraw2017");
+    _byVVLooseIsolationMVArun2017v2DBnewDMwLT2017 = tau->tauID("byVVLooseIsolationMVArun2017v2DBnewDMwLT2017");
     _byVLooseIsolationMVArun2017v2DBnewDMwLT2017 = tau->tauID("byVLooseIsolationMVArun2017v2DBnewDMwLT2017");
     _byLooseIsolationMVArun2017v2DBnewDMwLT2017 = tau->tauID("byLooseIsolationMVArun2017v2DBnewDMwLT2017");
     _byMediumIsolationMVArun2017v2DBnewDMwLT2017 = tau->tauID("byMediumIsolationMVArun2017v2DBnewDMwLT2017");
     _byTightIsolationMVArun2017v2DBnewDMwLT2017 = tau->tauID("byTightIsolationMVArun2017v2DBnewDMwLT2017");
     _byVTightIsolationMVArun2017v2DBnewDMwLT2017 = tau->tauID("byVTightIsolationMVArun2017v2DBnewDMwLT2017");
+    _byVVTightIsolationMVArun2017v2DBnewDMwLT2017 = tau->tauID("byVVTightIsolationMVArun2017v2DBnewDMwLT2017");
+    _byLooseCombinedIsolationDeltaBetaCorr3Hits = tau->tauID("byLooseCombinedIsolationDeltaBetaCorr3Hits");
+    _byMediumCombinedIsolationDeltaBetaCorr3Hits = tau->tauID("byMediumCombinedIsolationDeltaBetaCorr3Hits");
+    _byTightCombinedIsolationDeltaBetaCorr3Hits = tau->tauID("byTightCombinedIsolationDeltaBetaCorr3Hits");
     
     _againstMuonLoose3 = tau->tauID("againstMuonLoose3");
     _againstMuonTight3 = tau->tauID("againstMuonTight3");
