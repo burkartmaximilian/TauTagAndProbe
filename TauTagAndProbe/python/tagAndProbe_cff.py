@@ -18,28 +18,26 @@ HLTLIST_TAG = cms.VPSet(
 )
 
 
-
-
 HLTLIST = cms.VPSet(
     #Mu-Tau20 (VBF monitoring)
     cms.PSet (
-        HLT = cms.string("HLT_IsoMu27_LooseChargedIsoPFTau20_Trk1_eta2p1_SingleL1_v"),
-        path1 = cms.vstring ("hltL3crIsoL1sMu22Or25L1f0L2f10QL3f27QL3trkIsoFiltered0p07", "hltOverlapFilterIsoMu27LooseChargedIsoPFTau20"),
-        path2 = cms.vstring ("hltPFTau20TrackLooseChargedIsoAgainstMuon", "hltOverlapFilterIsoMu27LooseChargedIsoPFTau20"),
+        HLT = cms.string("HLT_IsoMu24_LooseChargedIsoPFTau20_Trk1_eta2p1_SingleL1_v"),
+        path1 = cms.vstring ("hltL3crIsoL1sSingleMu22erL1f0L2f10QL3f24QL3trkIsoFiltered0p07", "hltOverlapFilterIsoMu24LooseChargedIsoPFTau20"),
+        path2 = cms.vstring ("hltPFTau20TrackLooseChargedIsoAgainstMuon", "hltOverlapFilterIsoMu24LooseChargedIsoPFTau20"),
         leg1 = cms.int32(13),
         leg2 = cms.int32(15)
     ),
     cms.PSet (
-        HLT = cms.string("HLT_IsoMu27_MediumChargedIsoPFTau20_Trk1_eta2p1_SingleL1_v"),
-        path1 = cms.vstring ("hltL3crIsoL1sMu22Or25L1f0L2f10QL3f27QL3trkIsoFiltered0p07", "hltOverlapFilterIsoMu27MediumChargedIsoPFTau20"),
-        path2 = cms.vstring ("hltPFTau20TrackMediumChargedIsoAgainstMuon", "hltOverlapFilterIsoMu27MediumChargedIsoPFTau20"),
+        HLT = cms.string("HLT_IsoMu24_MediumChargedIsoPFTau20_Trk1_eta2p1_SingleL1_v"),
+        path1 = cms.vstring ("hltL3crIsoL1sSingleMu22erL1f0L2f10QL3f24QL3trkIsoFiltered0p07", "hltOverlapFilterIsoMu24MediumChargedIsoPFTau20"),
+        path2 = cms.vstring ("hltPFTau20TrackMediumChargedIsoAgainstMuon", "hltOverlapFilterIsoMu24MediumChargedIsoPFTau20"),
         leg1 = cms.int32(13),
         leg2 = cms.int32(15)
     ),
     cms.PSet (
-        HLT = cms.string("HLT_IsoMu27_TightChargedIsoPFTau20_Trk1_eta2p1_SingleL_v"),
-        path1 = cms.vstring ("hltL3crIsoL1sMu22Or25L1f0L2f10QL3f27QL3trkIsoFiltered0p07", "hltOverlapFilterIsoMu27TightChargedIsoPFTau20"),
-        path2 = cms.vstring ("hltPFTau20TrackTightChargedIsoAgainstMuon", "hltOverlapFilterIsoMu27TightChargedIsoPFTau20"),
+        HLT = cms.string("HLT_IsoMu24_TightChargedIsoPFTau20_Trk1_eta2p1_SingleL_v"),
+        path1 = cms.vstring ("hltL3crIsoL1sSingleMu22erL1f0L2f10QL3f24QL3trkIsoFiltered0p07", "hltOverlapFilterIsoMu24TightChargedIsoPFTau20"),
+        path2 = cms.vstring ("hltPFTau20TrackTightChargedIsoAgainstMuon", "hltOverlapFilterIsoMu24TightChargedIsoPFTau20"),
         leg1 = cms.int32(13),
         leg2 = cms.int32(15)
     ),
@@ -183,11 +181,11 @@ goodTaus = cms.EDFilter("PATTauRefSelector",
         src = cms.InputTag("NewTauIDsEmbedded"),
         cut = cms.string(
         #        'pt > 5 && abs(eta) < 2.1 ' #kinematics
-                'pt > 20 && abs(eta) < 2.1 ' #kinematics
+                'abs(eta) < 2.1 ' #kinematics
                 '&& abs(charge) > 0 && abs(charge) < 2 ' #sometimes 2 prongs have charge != 1
                 '&& tauID("decayModeFinding") > 0.5 ' # tau ID
-                '&& tauID("byMediumIsolationMVArun2017v2DBoldDMwLT2017") > 0.5 '
-                '&& tauID("againstMuonTight3") > 0.5 ' # anti Muon tight
+                '&& tauID("byVVLooseIsolationMVArun2017v2DBoldDMwLT2017") > 0.5 '
+                '&& tauID("againstMuonLoose3") > 0.5 ' # anti Muon tight
                 '&& tauID("againstElectronVLooseMVA6") > 0.5 ' # anti-Ele loose
         ),
         filter = cms.bool(True)
