@@ -97,22 +97,6 @@ class NtuplizerTau : public edm::EDAnalyzer {
         int _tau_genindex;        
         float _tauTrkPt;
   
-        float _tauIsolationTracksPtSum;
-        float _tauIsolationEcalhitsEtSum;
-        float _tauIsolationPFChargedHadrCandsPtSum;
-        float _tauIsolationPFGammaCandsEtSum;
-        float _tauEmFraction;
-        float _tauEcalEnergy;
-        float _tauEcalStripSumEOverPLead;
-        float _tauMaximumHcalPFClusterEt;
-        float _tauHcalEnergy;
-        float _tauHcal3x3OverPLead;
-        float _tauHcalTotOverPLead;
-        float _tauEtaetaMoment;
-        float _tauEtaphiMoment;
-        float _tauPhiphiMoment;
-        float _tauBremsRecoveryEOverPLead;
-
         bool _byLooseCombinedIsolationDeltaBetaCorr3Hits;
         bool _byMediumCombinedIsolationDeltaBetaCorr3Hits;
         bool _byTightCombinedIsolationDeltaBetaCorr3Hits;
@@ -387,22 +371,7 @@ void NtuplizerTau::Initialize() {
     _mVis = -1.;
     _tau_genindex = -1;
     _tauTrkPt = -1.;
-    _tauIsolationTracksPtSum = -1.;
-    _tauIsolationEcalhitsEtSum = -1.;
-    _tauIsolationPFChargedHadrCandsPtSum = -1.;
-    _tauIsolationPFGammaCandsEtSum = -1.;
-    _tauEmFraction = -1.;
-    _tauEcalEnergy = -1.;
-    _tauEcalStripSumEOverPLead = -1.;
-    _tauMaximumHcalPFClusterEt = -1.;
-    _tauHcalEnergy = -1.;
-    _tauHcal3x3OverPLead = -1.;
-    _tauHcalTotOverPLead = -1.;
-    _tauEtaetaMoment = -1.;
-    _tauEtaphiMoment = -1.;
-    _tauPhiphiMoment = -1.;
-    _tauBremsRecoveryEOverPLead = -1.;
-    
+
     _byLooseCombinedIsolationDeltaBetaCorr3Hits = 0;
     _byMediumCombinedIsolationDeltaBetaCorr3Hits = 0;
     _byTightCombinedIsolationDeltaBetaCorr3Hits = 0;
@@ -502,22 +471,6 @@ void NtuplizerTau::beginJob()
     _tree -> Branch("tau_genindex", &_tau_genindex, "tau_genindex/I");
     _tree -> Branch("tauTrkPt", &_tauTrkPt, "tauTrkPt/F");
     
-    _tree -> Branch("tauIsolationTracksPtSum", &_tauIsolationTracksPtSum, "tauIsolationTracksPtSum/F");
-    _tree -> Branch("tauIsolationEcalhitsEtSum", &_tauIsolationEcalhitsEtSum, "tauIsolationEcalhitsEtSum/F");
-    _tree -> Branch("tauIsolationPFChargedHadrCandsPtSum", &_tauIsolationPFChargedHadrCandsPtSum, "tauIsolationPFChargedHadrCandsPtSum/F");
-    _tree -> Branch("tauIsolationPFGammaCandsEtSum", &_tauIsolationPFGammaCandsEtSum, "tauIsolationPFGammaCandsEtSum/F");
-    _tree -> Branch("tauEmFraction", &_tauEmFraction, "tauEmFraction/F");
-    _tree -> Branch("tauEcalEnergy", &_tauEcalEnergy, "tauEcalEnergy/F");
-    _tree -> Branch("tauEcalStripSumEOverPLead", &_tauEcalStripSumEOverPLead, "tauEcalStripSumEOverPLead/F");
-    _tree -> Branch("tauMaximumHcalPFClusterEt", &_tauMaximumHcalPFClusterEt, "tauMaximumHcalPFClusterEt/F");
-    _tree -> Branch("tauHcalEnergy", &_tauHcalEnergy, "tauHcalEnergy/F");
-    _tree -> Branch("tauHcal3x3OverPLead", &_tauHcal3x3OverPLead, "tauHcal3x3OverPLead/F");
-    _tree -> Branch("tauHcalTotOverPLead", &_tauHcalTotOverPLead, "tauHcalTotOverPLead/F");
-    _tree -> Branch("tauEtaetaMoment", &_tauEtaetaMoment, "tauEtaetaMoment/F");
-    _tree -> Branch("tauEtaphiMoment", &_tauEtaphiMoment, "tauEtaphiMoment/F");
-    _tree -> Branch("tauPhiphiMoment", &_tauPhiphiMoment, "tauPhiphiMoment/F");
-    _tree -> Branch("tauBremsRecoveryEOverPLead", &_tauBremsRecoveryEOverPLead, "tauBremsRecoveryEOverPLead/F");
-
     _tree -> Branch("byLooseCombinedIsolationDeltaBetaCorr3Hits", &_byLooseCombinedIsolationDeltaBetaCorr3Hits, "byLooseCombinedIsolationDeltaBetaCorr3Hits/O");
     _tree -> Branch("byMediumCombinedIsolationDeltaBetaCorr3Hits", &_byMediumCombinedIsolationDeltaBetaCorr3Hits, "byMediumCombinedIsolationDeltaBetaCorr3Hits/O");
     _tree -> Branch("byTightCombinedIsolationDeltaBetaCorr3Hits", &_byTightCombinedIsolationDeltaBetaCorr3Hits, "byTightCombinedIsolationDeltaBetaCorr3Hits/O");
@@ -873,21 +826,6 @@ void NtuplizerTau::analyze(const edm::Event& iEvent, const edm::EventSetup& eSet
     _tauPhi = tau->phi();
     _tauDM = tau->decayMode();
     _tauTrkPt = tau->leadChargedHadrCand()->pt();
-    // _tauIsolationTracksPtSum = tau->isolationTracksPtSum();
-    // _tauIsolationEcalhitsEtSum = tau->isolationECALhitsEtSum();
-    // _tauIsolationPFChargedHadrCandsPtSum = tau->isolationPFChargedHadrCandsPtSum();
-    // _tauIsolationPFGammaCandsEtSum = tau->isolationPFGammaCandsEtSum();
-    // _tauEcalEnergy = tau->ecalEnergy();
-    // _tauEcalStripSumEOverPLead = tau->ecalStripSumEOverPLead();
-    // _tauEmFraction = tau->emFraction();
-    // _tauMaximumHcalPFClusterEt = tau->maximumHCALPFClusterEt();
-    // _tauHcalEnergy = tau->hcalEnergy();
-    // _tauHcal3x3OverPLead = tau->hcal3x3OverPLead();
-    // _tauHcalTotOverPLead = tau->hcalTotOverPLead();
-    // _tauEtaetaMoment = tau->etaetaMoment();
-    // _tauEtaphiMoment = tau->etaphiMoment();
-    // _tauPhiphiMoment = tau->phiphiMoment();
-    // _tauBremsRecoveryEOverPLead = tau->bremsRecoveryEOverPLead();
     
     _byIsolationMVArun2017v2DBoldDMwLTraw2017 = tau->tauID("byIsolationMVArun2017v2DBoldDMwLTraw2017");
     _byVVLooseIsolationMVArun2017v2DBoldDMwLT2017 = tau->tauID("byVVLooseIsolationMVArun2017v2DBoldDMwLT2017");
