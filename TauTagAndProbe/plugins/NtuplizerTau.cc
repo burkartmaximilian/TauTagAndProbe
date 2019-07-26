@@ -92,14 +92,18 @@ class NtuplizerTau : public edm::EDAnalyzer {
         float _tauEta;
         float _tauPhi;
         int _tauDM;
+        float _tauMass;
         float _mT;
         float _mVis;
-        int _tau_genindex;        
+        int _tau_genindex;
         float _tauTrkPt;
+        bool _decayModeFinding;
+        bool _decayModeFindingNewDMs;
   
         bool _byLooseCombinedIsolationDeltaBetaCorr3Hits;
         bool _byMediumCombinedIsolationDeltaBetaCorr3Hits;
         bool _byTightCombinedIsolationDeltaBetaCorr3Hits;
+
         float _byIsolationMVArun2017v2DBoldDMwLTraw2017;
         bool _byVVLooseIsolationMVArun2017v2DBoldDMwLT2017;
         bool _byVLooseIsolationMVArun2017v2DBoldDMwLT2017;
@@ -108,6 +112,7 @@ class NtuplizerTau : public edm::EDAnalyzer {
         bool _byTightIsolationMVArun2017v2DBoldDMwLT2017;
         bool _byVTightIsolationMVArun2017v2DBoldDMwLT2017;
         bool _byVVTightIsolationMVArun2017v2DBoldDMwLT2017;
+
         float _byIsolationMVArun2017v2DBnewDMwLTraw2017;
         bool _byVVLooseIsolationMVArun2017v2DBnewDMwLT2017;
         bool _byVLooseIsolationMVArun2017v2DBnewDMwLT2017;
@@ -116,6 +121,32 @@ class NtuplizerTau : public edm::EDAnalyzer {
         bool _byTightIsolationMVArun2017v2DBnewDMwLT2017;
         bool _byVTightIsolationMVArun2017v2DBnewDMwLT2017;       
         bool _byVVTightIsolationMVArun2017v2DBnewDMwLT2017;       
+
+        float _byDeepTau2017v2VSjetraw;
+        bool _byVVVLooseDeepTau2017v2VSjet;
+        bool _byVVLooseDeepTau2017v2VSjet;
+        bool _byVLooseDeepTau2017v2VSjet;
+        bool _byLooseDeepTau2017v2VSjet;
+        bool _byMediumDeepTau2017v2VSjet;
+        bool _byTightDeepTau2017v2VSjet;
+        bool _byVTightDeepTau2017v2VSjet;
+        bool _byVVTightDeepTau2017v2VSjet;
+
+        float _byDeepTau2017v2VSeraw;
+        bool _byVVVLooseDeepTau2017v2VSe;
+        bool _byVVLooseDeepTau2017v2VSe;
+        bool _byVLooseDeepTau2017v2VSe;
+        bool _byLooseDeepTau2017v2VSe;
+        bool _byMediumDeepTau2017v2VSe;
+        bool _byTightDeepTau2017v2VSe;
+        bool _byVTightDeepTau2017v2VSe;
+        bool _byVVTightDeepTau2017v2VSe;
+          
+        float _byDeepTau2017v2VSmuraw;
+        bool _byVLooseDeepTau2017v2VSmu;
+        bool _byLooseDeepTau2017v2VSmu;
+        bool _byMediumDeepTau2017v2VSmu;
+        bool _byTightDeepTau2017v2VSmu;
           
         bool _againstMuonLoose3;
         bool _againstMuonTight3;
@@ -128,6 +159,7 @@ class NtuplizerTau : public edm::EDAnalyzer {
         vector<float> _hltPt;
         vector<float> _hltEta;
         vector<float> _hltPhi;
+        vector<float> _hltMass;
         float _hltL2CaloJetPt;
         float _hltL2CaloJetEta;
         float _hltL2CaloJetPhi;
@@ -144,6 +176,12 @@ class NtuplizerTau : public edm::EDAnalyzer {
         float _hltPFTau35TrackPt1RegPt;
         float _hltPFTau35TrackPt1RegEta;
         float _hltPFTau35TrackPt1RegPhi;
+        float _hltHPSPFTauTrackPt;
+        float _hltHPSPFTauTrackEta;
+        float _hltHPSPFTauTrackPhi;
+        float _hltHPSPFTauTrackRegPt;
+        float _hltHPSPFTauTrackRegEta;
+        float _hltHPSPFTauTrackRegPhi;
 
         int _l1tQual;
         float _l1tPt;
@@ -367,14 +405,19 @@ void NtuplizerTau::Initialize() {
     _tauEta = -1.;
     _tauPhi = -1.;
     _tauDM = -1;
+    _tauMass = -1;
     _mT = -1.;
     _mVis = -1.;
     _tau_genindex = -1;
     _tauTrkPt = -1.;
 
+    _decayModeFinding = 0;
+    _decayModeFindingNewDMs = 0;
+
     _byLooseCombinedIsolationDeltaBetaCorr3Hits = 0;
     _byMediumCombinedIsolationDeltaBetaCorr3Hits = 0;
     _byTightCombinedIsolationDeltaBetaCorr3Hits = 0;
+
     _byIsolationMVArun2017v2DBoldDMwLTraw2017 = -1.;
     _byVVLooseIsolationMVArun2017v2DBoldDMwLT2017 = 0;
     _byVLooseIsolationMVArun2017v2DBoldDMwLT2017 = 0;
@@ -383,6 +426,7 @@ void NtuplizerTau::Initialize() {
     _byTightIsolationMVArun2017v2DBoldDMwLT2017 = 0;
     _byVTightIsolationMVArun2017v2DBoldDMwLT2017 = 0;
     _byVVTightIsolationMVArun2017v2DBoldDMwLT2017 = 0;
+
     _byIsolationMVArun2017v2DBnewDMwLTraw2017 = -1.;
     _byVVLooseIsolationMVArun2017v2DBnewDMwLT2017 = 0;
     _byVLooseIsolationMVArun2017v2DBnewDMwLT2017 = 0;
@@ -392,6 +436,32 @@ void NtuplizerTau::Initialize() {
     _byVTightIsolationMVArun2017v2DBnewDMwLT2017 = 0;    
     _byVVTightIsolationMVArun2017v2DBnewDMwLT2017 = 0;    
     
+    _byDeepTau2017v2VSjetraw = -1.;
+    _byVVVLooseDeepTau2017v2VSjet = 0;
+    _byVVLooseDeepTau2017v2VSjet = 0;
+    _byVLooseDeepTau2017v2VSjet = 0;
+    _byLooseDeepTau2017v2VSjet = 0;
+    _byMediumDeepTau2017v2VSjet = 0;
+    _byTightDeepTau2017v2VSjet = 0;
+    _byVTightDeepTau2017v2VSjet = 0;
+    _byVVTightDeepTau2017v2VSjet = 0;
+
+    _byDeepTau2017v2VSeraw = -1.;
+    _byVVVLooseDeepTau2017v2VSe = 0;
+    _byVVLooseDeepTau2017v2VSe = 0;
+    _byVLooseDeepTau2017v2VSe = 0;
+    _byLooseDeepTau2017v2VSe = 0;
+    _byMediumDeepTau2017v2VSe = 0;
+    _byTightDeepTau2017v2VSe = 0;
+    _byVTightDeepTau2017v2VSe = 0;
+    _byVVTightDeepTau2017v2VSe = 0;
+    
+    _byDeepTau2017v2VSmuraw = -1.;
+    _byVLooseDeepTau2017v2VSmu = 0;
+    _byLooseDeepTau2017v2VSmu = 0;
+    _byMediumDeepTau2017v2VSmu = 0;
+    _byTightDeepTau2017v2VSmu = 0;
+
     _againstMuonLoose3 = 0;
     _againstMuonTight3 = 0;
     _againstElectronVLooseMVA6 = 0;
@@ -409,6 +479,7 @@ void NtuplizerTau::Initialize() {
     _hltPt.assign(NUMBER_OF_MAXIMUM_TRIGGERS,-1);
     _hltEta.assign(NUMBER_OF_MAXIMUM_TRIGGERS,666);
     _hltPhi.assign(NUMBER_OF_MAXIMUM_TRIGGERS,666);
+    _hltMass.assign(NUMBER_OF_MAXIMUM_TRIGGERS,666);
     _hltL2CaloJetPt = -1;
     _hltL2CaloJetEta = 666;
     _hltL2CaloJetPhi = 666;
@@ -425,6 +496,13 @@ void NtuplizerTau::Initialize() {
     _hltPFTau35TrackPt1RegPt = -1;
     _hltPFTau35TrackPt1RegEta = 666;
     _hltPFTau35TrackPt1RegPhi = 666;
+
+    _hltHPSPFTauTrackPt = -1;
+    _hltHPSPFTauTrackEta = 666;
+    _hltHPSPFTauTrackPhi = 666;
+    _hltHPSPFTauTrackRegPt = -1;
+    _hltHPSPFTauTrackRegEta = 666;
+    _hltHPSPFTauTrackRegPhi = 666;
     
     _l1tPt = -1;
     _l1tEta = 666;
@@ -466,6 +544,8 @@ void NtuplizerTau::beginJob()
     _tree -> Branch("tauEta", &_tauEta, "tauEta/F");
     _tree -> Branch("tauPhi", &_tauPhi, "tauPhi/F");
     _tree -> Branch("tauDM", &_tauDM, "tauDM/I");
+    // TODO: add new decay modes
+    _tree -> Branch("tauMass", &_tauMass, "tauMass/F");
     _tree -> Branch("mT", &_mT, "mT/F");
     _tree -> Branch("mVis", &_mVis, "mVis/F");
     _tree -> Branch("tau_genindex", &_tau_genindex, "tau_genindex/I");
@@ -474,6 +554,7 @@ void NtuplizerTau::beginJob()
     _tree -> Branch("byLooseCombinedIsolationDeltaBetaCorr3Hits", &_byLooseCombinedIsolationDeltaBetaCorr3Hits, "byLooseCombinedIsolationDeltaBetaCorr3Hits/O");
     _tree -> Branch("byMediumCombinedIsolationDeltaBetaCorr3Hits", &_byMediumCombinedIsolationDeltaBetaCorr3Hits, "byMediumCombinedIsolationDeltaBetaCorr3Hits/O");
     _tree -> Branch("byTightCombinedIsolationDeltaBetaCorr3Hits", &_byTightCombinedIsolationDeltaBetaCorr3Hits, "byTightCombinedIsolationDeltaBetaCorr3Hits/O");
+
     _tree -> Branch("byIsolationMVArun2017v2DBoldDMwLTraw2017", &_byIsolationMVArun2017v2DBoldDMwLTraw2017, "byIsolationMVArun2017v2DBoldDMwLTraw2017/F");
     _tree -> Branch("byVVLooseIsolationMVArun2017v2DBoldDMwLT2017", &_byVVLooseIsolationMVArun2017v2DBoldDMwLT2017, "byVVLooseIsolationMVArun2017v2DBoldDMwLT2017/O");
     _tree -> Branch("byVLooseIsolationMVArun2017v2DBoldDMwLT2017", &_byVLooseIsolationMVArun2017v2DBoldDMwLT2017, "byVLooseIsolationMVArun2017v2DBoldDMwLT2017/O");
@@ -482,6 +563,7 @@ void NtuplizerTau::beginJob()
     _tree -> Branch("byTightIsolationMVArun2017v2DBoldDMwLT2017", &_byTightIsolationMVArun2017v2DBoldDMwLT2017, "byTightIsolationMVArun2017v2DBoldDMwLT2017/O");
     _tree -> Branch("byVTightIsolationMVArun2017v2DBoldDMwLT2017", &_byVTightIsolationMVArun2017v2DBoldDMwLT2017, "byVTightIsolationMVArun2017v2DBoldDMwLT2017/O");
     _tree -> Branch("byVVTightIsolationMVArun2017v2DBoldDMwLT2017", &_byVVTightIsolationMVArun2017v2DBoldDMwLT2017, "byVVTightIsolationMVArun2017v2DBoldDMwLT2017/O");
+
     _tree -> Branch("byIsolationMVArun2017v2DBnewDMwLTraw2017", &_byIsolationMVArun2017v2DBnewDMwLTraw2017, "byIsolationMVArun2017v2DBnewDMwLTraw2017/F");
     _tree -> Branch("byVVLooseIsolationMVArun2017v2DBnewDMwLT2017", &_byVVLooseIsolationMVArun2017v2DBnewDMwLT2017, "byVVLooseIsolationMVArun2017v2DBnewDMwLT2017/O");
     _tree -> Branch("byVLooseIsolationMVArun2017v2DBnewDMwLT2017", &_byVLooseIsolationMVArun2017v2DBnewDMwLT2017, "byVLooseIsolationMVArun2017v2DBnewDMwLT2017/O");
@@ -491,6 +573,32 @@ void NtuplizerTau::beginJob()
     _tree -> Branch("byVTightIsolationMVArun2017v2DBnewDMwLT2017", &_byVTightIsolationMVArun2017v2DBnewDMwLT2017, "byVTightIsolationMVArun2017v2DBnewDMwLT2017/O");    
     _tree -> Branch("byVVTightIsolationMVArun2017v2DBnewDMwLT2017", &_byVVTightIsolationMVArun2017v2DBnewDMwLT2017, "byVVTightIsolationMVArun2017v2DBnewDMwLT2017/O");    
     
+    _tree->Branch("byDeepTau2017v2VSjetraw", &_byDeepTau2017v2VSjetraw, "byDeepTau2017v2VSjetraw/F");
+    _tree->Branch("byVVVLooseDeepTau2017v2VSjet", &_byVVVLooseDeepTau2017v2VSjet, "byVVVLooseDeepTau2017v2VSjet/O");
+    _tree->Branch("byVVLooseDeepTau2017v2VSjet", &_byVVLooseDeepTau2017v2VSjet, "byVVLooseDeepTau2017v2VSjet/O");
+    _tree->Branch("byVLooseDeepTau2017v2VSjet", &_byVLooseDeepTau2017v2VSjet, "byVLooseDeepTau2017v2VSjet/O");
+    _tree->Branch("byLooseDeepTau2017v2VSjet", &_byLooseDeepTau2017v2VSjet, "byLooseDeepTau2017v2VSjet/O");
+    _tree->Branch("byMediumDeepTau2017v2VSjet", &_byMediumDeepTau2017v2VSjet, "byMediumDeepTau2017v2VSjet/O");
+    _tree->Branch("byTightDeepTau2017v2VSjet", &_byTightDeepTau2017v2VSjet, "byTightDeepTau2017v2VSjet/O");
+    _tree->Branch("byVTightDeepTau2017v2VSjet", &_byVTightDeepTau2017v2VSjet, "byVTightDeepTau2017v2VSjet/O");
+    _tree->Branch("byVVTightDeepTau2017v2VSjet", &_byVVTightDeepTau2017v2VSjet, "byVVTightDeepTau2017v2VSjet/O");
+
+    _tree->Branch("byDeepTau2017v2VSeraw", &_byDeepTau2017v2VSeraw, "byDeepTau2017v2VSeraw/F");
+    _tree->Branch("byVVVLooseDeepTau2017v2VSe", &_byVVVLooseDeepTau2017v2VSe, "byVVVLooseDeepTau2017v2VSe/O");
+    _tree->Branch("byVVLooseDeepTau2017v2VSe", &_byVVLooseDeepTau2017v2VSe, "byVVLooseDeepTau2017v2VSe/O");
+    _tree->Branch("byVLooseDeepTau2017v2VSe", &_byVLooseDeepTau2017v2VSe, "byVLooseDeepTau2017v2VSe/O");
+    _tree->Branch("byLooseDeepTau2017v2VSe", &_byLooseDeepTau2017v2VSe, "byLooseDeepTau2017v2VSe/O");
+    _tree->Branch("byMediumDeepTau2017v2VSe", &_byMediumDeepTau2017v2VSe, "byMediumDeepTau2017v2VSe/O");
+    _tree->Branch("byTightDeepTau2017v2VSe", &_byTightDeepTau2017v2VSe, "byTightDeepTau2017v2VSe/O");
+    _tree->Branch("byVTightDeepTau2017v2VSe", &_byVTightDeepTau2017v2VSe, "byVTightDeepTau2017v2VSe/O");
+    _tree->Branch("byVVTightDeepTau2017v2VSe", &_byVVTightDeepTau2017v2VSe, "byVVTightDeepTau2017v2VSe/O");
+    
+    _tree->Branch("byDeepTau2017v2VSmuraw", &_byDeepTau2017v2VSmuraw, "byDeepTau2017v2VSmuraw/F");
+    _tree->Branch("byVLooseDeepTau2017v2VSmu", &_byVLooseDeepTau2017v2VSmu, "byVLooseDeepTau2017v2VSmu/O");
+    _tree->Branch("byLooseDeepTau2017v2VSmu", &_byLooseDeepTau2017v2VSmu, "byLooseDeepTau2017v2VSmu/O");
+    _tree->Branch("byMediumDeepTau2017v2VSmu", &_byMediumDeepTau2017v2VSmu, "byMediumDeepTau2017v2VSmu/O");
+    _tree->Branch("byTightDeepTau2017v2VSmu", &_byTightDeepTau2017v2VSmu, "byTightDeepTau2017v2VSmu/O");
+          
     
     _tree -> Branch("againstMuonLoose3", &_againstMuonLoose3, "againstMuonLoose3/O");;
     _tree -> Branch("againstMuonTight3", &_againstMuonTight3, "againstMuonTight3/O");
@@ -509,6 +617,7 @@ void NtuplizerTau::beginJob()
     _tree -> Branch("hltPt",  &_hltPt);
     _tree -> Branch("hltEta", &_hltEta);
     _tree -> Branch("hltPhi", &_hltPhi);
+    _tree -> Branch("hltMass", &_hltMass);
     
     _tree -> Branch("hltL2CaloJetPt",  &_hltL2CaloJetPt,  "hltL2CaloJetPt/F");
     _tree -> Branch("hltL2CaloJetEta", &_hltL2CaloJetEta, "hltL2CaloJetEta/F");
@@ -528,6 +637,12 @@ void NtuplizerTau::beginJob()
     _tree -> Branch("hltPFTau35TrackPt1RegEta", &_hltPFTau35TrackPt1RegEta, "hltPFTau35TrackPt1RegEta/F");;
     _tree -> Branch("hltPFTau35TrackPt1RegPhi", &_hltPFTau35TrackPt1RegPhi, "hltPFTau35TrackPt1RegPhi/F");
     
+    _tree -> Branch("hltHPSPFTauTrackPt",  &_hltHPSPFTauTrackPt,  "hltHPSPFTauTrackPt/F");
+    _tree -> Branch("hltHPSPFTauTrackEta", &_hltHPSPFTauTrackEta, "hltHPSPFTauTrackEta/F");;
+    _tree -> Branch("hltHPSPFTauTrackPhi", &_hltHPSPFTauTrackPhi, "hltHPSPFTauTrackPhi/F");
+    _tree -> Branch("hltHPSPFTauTrackRegPt",  &_hltHPSPFTauTrackRegPt,  "hltHPSPFTauTrackRegPt/F");
+    _tree -> Branch("hltHPSPFTauTrackRegEta", &_hltHPSPFTauTrackRegEta, "hltHPSPFTauTrackRegEta/F");;
+    _tree -> Branch("hltHPSPFTauTrackRegPhi", &_hltHPSPFTauTrackRegPhi, "hltHPSPFTauTrackRegPhi/F");
     
     _tree -> Branch("l1tPt",  &_l1tPt,  "l1tPt/F");
     _tree -> Branch("l1tEta", &_l1tEta, "l1tEta/F");
@@ -556,7 +671,6 @@ void NtuplizerTau::beginJob()
     _tree -> Branch("Nvtx", &_Nvtx, "Nvtx/I");
     _tree -> Branch("nTruePU", &_nTruePU, "nTruePU/F");
     _tree -> Branch("lastFilter", &_lastFilter, "lastFilter/I");
-
 
     return;
 }
@@ -677,16 +791,13 @@ void NtuplizerTau::analyze(const edm::Event& iEvent, const edm::EventSetup& eSet
                     //Retrieving filter list for the event
 
                     const std::vector<std::string>& filters = (parameter.leg1 == 15)? (parameter.hltFilters1):(parameter.hltFilters2);
-                    for (auto filt : filters)
-                        std::cout << "Filter to check: " << filt << std::endl;
-
                     if (this -> hasFilters(obj, filters))
                     {
                         _hltPt[x] = obj.pt();
                         _hltEta[x] = obj.eta();
                         _hltPhi[x] = obj.phi();
+                        _hltMass[x] = obj.p4().mass();
                         _tauTriggerBitSet[x] = true;
-                        std::cout << "Filters found." << std::endl;
                     }
                 }
                 x++;
@@ -721,6 +832,20 @@ void NtuplizerTau::analyze(const edm::Event& iEvent, const edm::EventSetup& eSet
 	      _hltPFTau35TrackPt1RegPhi = obj.phi();
 	    }
 
+	    const std::vector<std::string>& HPSPFTauTrack_filters = {"hltHpsPFTauTrack"};
+	    if (this -> hasFilters(obj, HPSPFTauTrack_filters) && obj.pt()>_hltHPSPFTauTrackPt){
+	      _hltHPSPFTauTrackPt = obj.pt();
+	      _hltHPSPFTauTrackEta = obj.eta();
+	      _hltHPSPFTauTrackPhi = obj.phi();
+	    }
+
+	    const std::vector<std::string>& HPSPFTauTrackReg_filters = {"hltHpsPFTauTrackReg"};
+	    if (this -> hasFilters(obj, HPSPFTauTrackReg_filters) && obj.pt()>_hltHPSPFTauTrackRegPt){
+	      _hltHPSPFTauTrackRegPt = obj.pt();
+	      _hltHPSPFTauTrackRegEta = obj.eta();
+	      _hltHPSPFTauTrackRegPhi = obj.phi();
+	    }
+
             if (obj.hasPathName(_filterPath + "*", false, false))
             {
                 for (std::vector<std::string>::reverse_iterator filterName = _triggerModules.rbegin(); filterName != _triggerModules.rend(); filterName+=1)
@@ -736,7 +861,6 @@ void NtuplizerTau::analyze(const edm::Event& iEvent, const edm::EventSetup& eSet
             }
 
         }
-        
     }
 
 
@@ -826,6 +950,7 @@ void NtuplizerTau::analyze(const edm::Event& iEvent, const edm::EventSetup& eSet
     _tauPhi = tau->phi();
     _tauDM = tau->decayMode();
     _tauTrkPt = tau->leadChargedHadrCand()->pt();
+    _tauMass = tau->p4().mass();
     
     _byIsolationMVArun2017v2DBoldDMwLTraw2017 = tau->tauID("byIsolationMVArun2017v2DBoldDMwLTraw2017");
     _byVVLooseIsolationMVArun2017v2DBoldDMwLT2017 = tau->tauID("byVVLooseIsolationMVArun2017v2DBoldDMwLT2017");
@@ -835,6 +960,7 @@ void NtuplizerTau::analyze(const edm::Event& iEvent, const edm::EventSetup& eSet
     _byTightIsolationMVArun2017v2DBoldDMwLT2017 = tau->tauID("byTightIsolationMVArun2017v2DBoldDMwLT2017");
     _byVTightIsolationMVArun2017v2DBoldDMwLT2017 = tau->tauID("byVTightIsolationMVArun2017v2DBoldDMwLT2017");
     _byVVTightIsolationMVArun2017v2DBoldDMwLT2017 = tau->tauID("byVVTightIsolationMVArun2017v2DBoldDMwLT2017");
+
     _byIsolationMVArun2017v2DBnewDMwLTraw2017 = tau->tauID("byIsolationMVArun2017v2DBnewDMwLTraw2017");
     _byVVLooseIsolationMVArun2017v2DBnewDMwLT2017 = tau->tauID("byVVLooseIsolationMVArun2017v2DBnewDMwLT2017");
     _byVLooseIsolationMVArun2017v2DBnewDMwLT2017 = tau->tauID("byVLooseIsolationMVArun2017v2DBnewDMwLT2017");
@@ -843,10 +969,37 @@ void NtuplizerTau::analyze(const edm::Event& iEvent, const edm::EventSetup& eSet
     _byTightIsolationMVArun2017v2DBnewDMwLT2017 = tau->tauID("byTightIsolationMVArun2017v2DBnewDMwLT2017");
     _byVTightIsolationMVArun2017v2DBnewDMwLT2017 = tau->tauID("byVTightIsolationMVArun2017v2DBnewDMwLT2017");
     _byVVTightIsolationMVArun2017v2DBnewDMwLT2017 = tau->tauID("byVVTightIsolationMVArun2017v2DBnewDMwLT2017");
+
     _byLooseCombinedIsolationDeltaBetaCorr3Hits = tau->tauID("byLooseCombinedIsolationDeltaBetaCorr3Hits");
     _byMediumCombinedIsolationDeltaBetaCorr3Hits = tau->tauID("byMediumCombinedIsolationDeltaBetaCorr3Hits");
     _byTightCombinedIsolationDeltaBetaCorr3Hits = tau->tauID("byTightCombinedIsolationDeltaBetaCorr3Hits");
     
+    _byDeepTau2017v2VSjetraw = tau->tauID("byDeepTau2017v2VSjetraw");
+    _byVVVLooseDeepTau2017v2VSjet = tau->tauID("byVVVLooseDeepTau2017v2VSjet");
+    _byVVLooseDeepTau2017v2VSjet = tau->tauID("byVVLooseDeepTau2017v2VSjet");
+    _byVLooseDeepTau2017v2VSjet = tau->tauID("byVLooseDeepTau2017v2VSjet");
+    _byLooseDeepTau2017v2VSjet = tau->tauID("byLooseDeepTau2017v2VSjet");
+    _byMediumDeepTau2017v2VSjet = tau->tauID("byMediumDeepTau2017v2VSjet");
+    _byTightDeepTau2017v2VSjet = tau->tauID("byTightDeepTau2017v2VSjet");
+    _byVTightDeepTau2017v2VSjet = tau->tauID("byVTightDeepTau2017v2VSjet");
+    _byVVTightDeepTau2017v2VSjet = tau->tauID("byVVTightDeepTau2017v2VSjet");
+
+    _byDeepTau2017v2VSeraw = tau->tauID("byDeepTau2017v2VSeraw");
+    _byVVVLooseDeepTau2017v2VSe = tau->tauID("byVVVLooseDeepTau2017v2VSe");
+    _byVVLooseDeepTau2017v2VSe = tau->tauID("byVVLooseDeepTau2017v2VSe");
+    _byVLooseDeepTau2017v2VSe = tau->tauID("byVLooseDeepTau2017v2VSe");
+    _byLooseDeepTau2017v2VSe = tau->tauID("byLooseDeepTau2017v2VSe");
+    _byMediumDeepTau2017v2VSe = tau->tauID("byMediumDeepTau2017v2VSe");
+    _byTightDeepTau2017v2VSe = tau->tauID("byTightDeepTau2017v2VSe");
+    _byVTightDeepTau2017v2VSe = tau->tauID("byVTightDeepTau2017v2VSe");
+    _byVVTightDeepTau2017v2VSe = tau->tauID("byVVTightDeepTau2017v2VSe");
+    
+    _byDeepTau2017v2VSmuraw = tau->tauID("byDeepTau2017v2VSmuraw");
+    _byVLooseDeepTau2017v2VSmu = tau->tauID("byVLooseDeepTau2017v2VSmu");
+    _byLooseDeepTau2017v2VSmu = tau->tauID("byLooseDeepTau2017v2VSmu");
+    _byMediumDeepTau2017v2VSmu = tau->tauID("byMediumDeepTau2017v2VSmu");
+    _byTightDeepTau2017v2VSmu = tau->tauID("byTightDeepTau2017v2VSmu");
+
     _againstMuonLoose3 = tau->tauID("againstMuonLoose3");
     _againstMuonTight3 = tau->tauID("againstMuonTight3");
     _againstElectronVLooseMVA6 = tau->tauID("againstElectronVLooseMVA6");
