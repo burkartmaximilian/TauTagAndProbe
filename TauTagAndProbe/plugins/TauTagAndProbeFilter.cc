@@ -12,13 +12,13 @@
 #include <DataFormats/PatCandidates/interface/Muon.h>
 #include <DataFormats/PatCandidates/interface/MET.h>
 #include <DataFormats/PatCandidates/interface/Jet.h>
+#include <DataFormats/PatCandidates/interface/Electron.h>
 #include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
 
 #include <iostream>
 #include <utility>
 #include <vector>
 
-using namespace edm;
 using namespace std;
 // using namespace reco;
 
@@ -34,28 +34,27 @@ class TauTagAndProbeFilter : public edm::EDFilter {
 
         float ComputeMT(math::XYZTLorentzVector visP4, const pat::MET& met);
 
-        EDGetTokenT<pat::TauRefVector>   _tausTag;
-        EDGetTokenT<pat::MuonRefVector>  _muonsTag;
-        EDGetTokenT<pat::METCollection>  _metTag;
+        edm::EDGetTokenT<pat::TauRefVector>   _tausTag;
+        edm::EDGetTokenT<pat::MuonRefVector>  _muonsTag;
+        edm::EDGetTokenT<pat::METCollection>  _metTag;
         bool _useMassCuts;
-        EDGetTokenT<edm::View<reco::GsfElectron> >  _electronsTag;
-        edm::EDGetTokenT<edm::ValueMap<bool> > _eleLooseIdMapTag;
+        edm::EDGetTokenT<edm::View<pat::Electron> >  _electronsTag;
+        std::string _electronId;
         bool _electronVeto;
-        EDGetTokenT<pat::JetRefVector>  _bjetsTag;
+        edm::EDGetTokenT<pat::JetRefVector>  _bjetsTag;
 };
 
 TauTagAndProbeFilter::TauTagAndProbeFilter(const edm::ParameterSet & iConfig) :
-_tausTag  (consumes<pat::TauRefVector>  (iConfig.getParameter<InputTag>("taus"))),
-_muonsTag (consumes<pat::MuonRefVector> (iConfig.getParameter<InputTag>("muons"))),
-_metTag   (consumes<pat::METCollection> (iConfig.getParameter<InputTag>("met"))),
-_electronsTag (consumes<edm::View<reco::GsfElectron> > (iConfig.getParameter<edm::InputTag>("electrons"))),
-_eleLooseIdMapTag  (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("eleLooseIdMap"))),
-_bjetsTag  (consumes<pat::JetRefVector>  (iConfig.getParameter<InputTag>("bjets")))
+_tausTag  (consumes<pat::TauRefVector>  (iConfig.getParameter<edm::InputTag>("taus"))),
+_muonsTag (consumes<pat::MuonRefVector> (iConfig.getParameter<edm::InputTag>("muons"))),
+_metTag   (consumes<pat::METCollection> (iConfig.getParameter<edm::InputTag>("met"))),
+_electronsTag (consumes<edm::View<pat::Electron> > (iConfig.getParameter<edm::InputTag>("electrons"))),
+_bjetsTag  (consumes<pat::JetRefVector>  (iConfig.getParameter<edm::InputTag>("bjets")))
 {
     produces <pat::TauRefVector>  (); // probe
     produces <pat::MuonRefVector> (); // tag
     _useMassCuts = iConfig.getParameter<bool>("useMassCuts");
-    _electronVeto = iConfig.getParameter<bool>("eleVeto");   
+    _electronId = iConfig.getParameter<std::string>("electronId");
 }
 
 TauTagAndProbeFilter::~TauTagAndProbeFilter()
@@ -65,34 +64,32 @@ bool TauTagAndProbeFilter::filter(edm::Event & iEvent, edm::EventSetup const& iS
 {
 
     std::unique_ptr<pat::MuonRefVector> resultMuon ( new pat::MuonRefVector );
-    std::unique_ptr<pat::TauRefVector>  resultTau  ( new pat::TauRefVector  );  
+    std::unique_ptr<pat::TauRefVector>  resultTau  ( new pat::TauRefVector  );
 
     // Veto events with loose electrons
     if(_electronVeto){
-      Handle<edm::View<reco::GsfElectron> > electrons;
+      edm::Handle<edm::View<pat::Electron> > electrons;
       iEvent.getByToken(_electronsTag, electrons);
-      Handle<edm::ValueMap<bool> > loose_id_decisions;
-      iEvent.getByToken(_eleLooseIdMapTag, loose_id_decisions);
-      
+
       for(unsigned int i = 0; i< electrons->size(); ++i){
-	
+
 	const auto ele = electrons->ptrAt(i);
-	int isLooseID = (*loose_id_decisions)[ele];
+	int isLooseID = ele->electronID(_electronId);
 	if(isLooseID && ele->p4().Pt()>10 && fabs(ele->p4().Eta())<2.5)
 	  return false;
-	
+
       }
-      
+
     }
 
     // ---------------------   search for the tag in the event --------------------
-    Handle<pat::MuonRefVector> muonHandle;
+    edm::Handle<pat::MuonRefVector> muonHandle;
     iEvent.getByToken (_muonsTag, muonHandle);
 
     const pat::MuonRef mu = (*muonHandle)[0] ;
 
     //---------------------   get the met for mt computation etc. -----------------
-    Handle<pat::METCollection> metHandle;
+    edm::Handle<pat::METCollection> metHandle;
     iEvent.getByToken (_metTag, metHandle);
     const pat::MET& met = (*metHandle)[0];
 
@@ -102,7 +99,7 @@ bool TauTagAndProbeFilter::filter(edm::Event & iEvent, edm::EventSetup const& iS
 
 
     // ------------------- get Taus -------------------------------
-    Handle<pat::TauRefVector> tauHandle;
+    edm::Handle<pat::TauRefVector> tauHandle;
     iEvent.getByToken (_tausTag, tauHandle);
     if (tauHandle->size() < 1) return false;
 
@@ -129,7 +126,7 @@ bool TauTagAndProbeFilter::filter(edm::Event & iEvent, edm::EventSetup const& iS
 
 
     // ----------------- b-jets veto ---------------------
-    Handle<pat::JetRefVector> bjetHandle;
+    edm::Handle<pat::JetRefVector> bjetHandle;
     iEvent.getByToken (_bjetsTag, bjetHandle);
 
     for(unsigned int ijet = 0; ijet < bjetHandle->size(); ijet++){
