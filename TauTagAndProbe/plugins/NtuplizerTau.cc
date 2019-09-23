@@ -550,6 +550,8 @@ void NtuplizerTau::beginJob()
     _tree -> Branch("mVis", &_mVis, "mVis/F");
     _tree -> Branch("tau_genindex", &_tau_genindex, "tau_genindex/I");
     _tree -> Branch("tauTrkPt", &_tauTrkPt, "tauTrkPt/F");
+    _tree -> Branch("decayModeFinding", &_decayModeFinding, "decayModeFinding/O");
+    _tree -> Branch("decayModeFindingNewDMs", &_decayModeFindingNewDMs, "decayModeFindingNewDMs/O");
     
     _tree -> Branch("byLooseCombinedIsolationDeltaBetaCorr3Hits", &_byLooseCombinedIsolationDeltaBetaCorr3Hits, "byLooseCombinedIsolationDeltaBetaCorr3Hits/O");
     _tree -> Branch("byMediumCombinedIsolationDeltaBetaCorr3Hits", &_byMediumCombinedIsolationDeltaBetaCorr3Hits, "byMediumCombinedIsolationDeltaBetaCorr3Hits/O");
@@ -951,6 +953,8 @@ void NtuplizerTau::analyze(const edm::Event& iEvent, const edm::EventSetup& eSet
     _tauDM = tau->decayMode();
     _tauTrkPt = tau->leadChargedHadrCand()->pt();
     _tauMass = tau->p4().mass();
+    _decayModeFinding = tau->tauID("decayModeFinding");
+    _decayModeFindingNewDMs = tau->tauID("decayModeFindingNewDMs");
     
     _byIsolationMVArun2017v2DBoldDMwLTraw2017 = tau->tauID("byIsolationMVArun2017v2DBoldDMwLTraw2017");
     _byVVLooseIsolationMVArun2017v2DBoldDMwLT2017 = tau->tauID("byVVLooseIsolationMVArun2017v2DBoldDMwLT2017");
