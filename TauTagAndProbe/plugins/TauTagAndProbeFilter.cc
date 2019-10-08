@@ -37,11 +37,12 @@ class TauTagAndProbeFilter : public edm::EDFilter {
         edm::EDGetTokenT<pat::TauRefVector>   _tausTag;
         edm::EDGetTokenT<pat::MuonRefVector>  _muonsTag;
         edm::EDGetTokenT<pat::METCollection>  _metTag;
-        bool _useMassCuts;
         edm::EDGetTokenT<edm::View<pat::Electron> >  _electronsTag;
-        std::string _electronId;
-        bool _electronVeto;
         edm::EDGetTokenT<pat::JetRefVector>  _bjetsTag;
+        bool _useMassCuts;
+        std::string _electronId;
+        std::string _tauId;
+        bool _electronVeto;
 };
 
 TauTagAndProbeFilter::TauTagAndProbeFilter(const edm::ParameterSet & iConfig) :
@@ -49,12 +50,13 @@ _tausTag  (consumes<pat::TauRefVector>  (iConfig.getParameter<edm::InputTag>("ta
 _muonsTag (consumes<pat::MuonRefVector> (iConfig.getParameter<edm::InputTag>("muons"))),
 _metTag   (consumes<pat::METCollection> (iConfig.getParameter<edm::InputTag>("met"))),
 _electronsTag (consumes<edm::View<pat::Electron> > (iConfig.getParameter<edm::InputTag>("electrons"))),
-_bjetsTag  (consumes<pat::JetRefVector>  (iConfig.getParameter<edm::InputTag>("bjets")))
+_bjetsTag  (consumes<pat::JetRefVector>  (iConfig.getParameter<edm::InputTag>("bjets"))),
+_useMassCuts (iConfig.getParameter<bool>("useMassCuts")),
+_electronId (iConfig.getParameter<std::string>("electronId")),
+_tauId (iConfig.getParameter<std::string>("tauId"))
 {
     produces <pat::TauRefVector>  (); // probe
     produces <pat::MuonRefVector> (); // tag
-    _useMassCuts = iConfig.getParameter<bool>("useMassCuts");
-    _electronId = iConfig.getParameter<std::string>("electronId");
 }
 
 TauTagAndProbeFilter::~TauTagAndProbeFilter()
@@ -76,7 +78,9 @@ bool TauTagAndProbeFilter::filter(edm::Event & iEvent, edm::EventSetup const& iS
 	const auto ele = electrons->ptrAt(i);
 	int isLooseID = ele->electronID(_electronId);
 	if(isLooseID && ele->p4().Pt()>10 && fabs(ele->p4().Eta())<2.5)
+        {
 	  return false;
+        }
 
       }
 
@@ -112,14 +116,17 @@ bool TauTagAndProbeFilter::filter(edm::Event & iEvent, edm::EventSetup const& iS
         if (deltaR(*tau, *mu) < 0.5) continue;
 
         // min iso
-        float isoMVA = tau->tauID("byIsolationMVArun2017v2DBoldDMwLTraw2017");
+        float isoMVA = tau->tauID(_tauId);
         tausIdxPtVec.push_back(make_pair(isoMVA, itau));
     }
 
 
     pat::TauRef tau;
 
-    if (tausIdxPtVec.size() == 0) return false; //No tau found
+    if (tausIdxPtVec.size() == 0)
+    {
+        return false; //No tau found
+    }
     if (tausIdxPtVec.size() > 1) sort (tausIdxPtVec.begin(), tausIdxPtVec.end()); //Sort if multiple taus
     int tauIdx = tausIdxPtVec.back().second; // min iso --> max MVA score
     tau = (*tauHandle)[tauIdx];
@@ -132,7 +139,9 @@ bool TauTagAndProbeFilter::filter(edm::Event & iEvent, edm::EventSetup const& iS
     for(unsigned int ijet = 0; ijet < bjetHandle->size(); ijet++){
 
       const pat::JetRef bjet = (*bjetHandle)[ijet];
-      if( deltaR(*mu,*bjet)>0.5 && deltaR(*tau,*bjet)>0.5 ) return false;
+      if( deltaR(*mu,*bjet)>0.5 && deltaR(*tau,*bjet)>0.5 ){
+          return false;
+      }
       
     }
       

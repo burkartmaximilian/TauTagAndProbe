@@ -9,6 +9,7 @@ isMC = True
 is2016 = False
 
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
 
 #### handling of cms line options for tier3 submission
@@ -65,6 +66,34 @@ setupEgammaPostRecoSeq(process,
                        ],
                        phoIDModules=[])
 
+from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
+updateJetCollection(
+        process,
+        jetSource = cms.InputTag("slimmedJets"),
+        pvSource = cms.InputTag("offlineSlimmedPrimaryVertices"),
+        svSource = cms.InputTag("slimmedSecondaryVertices"),
+        jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None'),
+        btagDiscriminators = [
+            'pfDeepFlavourJetTags:probb',
+            'pfDeepFlavourJetTags:probbb',
+            'pfDeepFlavourJetTags:problepb',
+            ],
+        postfix='NewDFTraining'
+)
+
+process.bTaggingSequence = cms.Sequence(
+        process.patJetCorrFactorsNewDFTraining +
+        process.updatedPatJetsNewDFTraining +
+        process.pfImpactParameterTagInfosNewDFTraining +
+        process.pfInclusiveSecondaryVertexFinderTagInfosNewDFTraining +
+        process.pfDeepCSVTagInfosNewDFTraining +
+        process.pfDeepFlavourTagInfosNewDFTraining +
+        process.pfDeepFlavourJetTagsNewDFTraining +
+        process.patJetCorrFactorsTransientCorrectedNewDFTraining +
+        process.updatedPatJetsTransientCorrectedNewDFTraining +
+        process.selectedUpdatedPatJetsNewDFTraining
+)
+
 #START RERUNNING OF ID TRAINING
 #
 # set up the rerunning of the latest tau id trainings
@@ -72,7 +101,7 @@ import RecoTauTag.RecoTau.tools.runTauIdMVA as idemb
 na = idemb.TauIDEmbedder(process, cms,
         debug=True,
         updatedTauName="NewTauIDsEmbedded",
-        toKeep=["2017v2", "newDM2017v2", "deepTau2017v2"]
+        toKeep=["2017v2", "newDM2017v2", "deepTau2017v2p1"]
 )
 na.runTauID()
 
@@ -93,7 +122,12 @@ else:
     process.load('TauTagAndProbe.TauTagAndProbe.MCanalysis_2018_cff')
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
-             "/store/mc/RunIIAutumn18MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v1/00000/87F96FBB-7EAC-BC44-8CA9-9B5787ECD801.root"
+             #"/store/mc/RunIIAutumn18MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v1/00000/87F96FBB-7EAC-BC44-8CA9-9B5787ECD801.root"
+             "file:///ceph/mburkart/trigger_testing_inputs/042C8EE9-9431-5443-88C8-77F1D910B3A5.root",
+             "file:///ceph/mburkart/trigger_testing_inputs/08540B6C-AA39-3F49-8FFE-8771AD2A8885.root",
+             "file:///ceph/mburkart/trigger_testing_inputs/872CAA08-8946-AA43-A812-F6E5963D917B.root",
+             "file:///ceph/mburkart/trigger_testing_inputs/8F103C41-A7BA-754F-923E-B5C102366249.root",
+             "file:///ceph/mburkart/trigger_testing_inputs/973AE986-070D-ED40-9A99-393E4E212670.root"
         )
     )
 
@@ -133,6 +167,7 @@ process.p = cms.Path(
     process.egammaPostRecoSeq +
     process.rerunMvaIsolationSequence +
     process.NewTauIDsEmbedded +
+    process.bTaggingSequence +
     process.TAndPseq +
     process.NtupleSeq
 )

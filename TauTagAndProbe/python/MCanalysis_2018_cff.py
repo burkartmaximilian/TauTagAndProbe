@@ -209,9 +209,9 @@ goodTaus = cms.EDFilter("PATTauRefSelector",
                 '&& abs(charge) > 0 && abs(charge) < 2 ' #sometimes 2 prongs have charge != 1
                 # '&& tauID("decayModeFinding") > 0.5 ' # tau ID
                 '&& (tauID("decayModeFinding") > 0.5 || tauID("decayModeFindingNewDMs") > 0.5)'
-                '&& (tauID("byVVLooseIsolationMVArun2017v2DBoldDMwLT2017") > 0.5 || tauID("byVVVLooseDeepTau2017v2VSjet") > 0.5)' # tau iso - NOTE: can as well use boolean discriminators with WP
-                '&& (tauID("againstMuonLoose3") > 0.5 || tauID("byVLooseDeepTau2017v2VSmu") > 0.5)' # anti Muon tight
-                '&& (tauID("againstElectronVLooseMVA6") > 0.5 || tauID("byVVVLooseDeepTau2017v2VSe") > 0.5)' # anti-Ele loose
+                '&& (tauID("byVVLooseIsolationMVArun2017v2DBoldDMwLT2017") > 0.5 || tauID("byVVVLooseDeepTau2017v2p1VSjet") > 0.5)' # tau iso - NOTE: can as well use boolean discriminators with WP
+                '&& (tauID("againstMuonLoose3") > 0.5 || tauID("byVLooseDeepTau2017v2p1VSmu") > 0.5)' # anti Muon tight
+                '&& (tauID("againstElectronVLooseMVA6") > 0.5 || tauID("byVVVLooseDeepTau2017v2p1VSe") > 0.5)' # anti-Ele loose
         ),
         filter = cms.bool(True)
 )
@@ -223,10 +223,10 @@ genMatchedTaus = cms.EDFilter("genMatchTauFilter",
 
 ## b jet veto : no additional b jets in the event (reject tt) -- use in sequence with
 bjets = cms.EDFilter("PATJetRefSelector",
-        src = cms.InputTag("slimmedJets"),
+        src = cms.InputTag("selectedUpdatedPatJetsNewDFTraining"),
         cut = cms.string(
                 'pt > 20 && abs(eta) < 2.4 ' #kinematics
-                '&& bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb") > 0.4184' # b tag with medium WP
+                '&& (bDiscriminator("pfDeepFlavourJetTags:probb") + bDiscriminator("pfDeepFlavourJetTags:probbb") + bDiscriminator("pfDeepFlavourJetTags:problepb")) > 0.2770' # b tag with medium WP
         ),
         #filter = cms.bool(True)
 )
@@ -239,7 +239,8 @@ TagAndProbe = cms.EDFilter("TauTagAndProbeFilter",
                            electrons = cms.InputTag("slimmedElectrons"),
                            electronId = cms.string("mvaEleID-Fall17-iso-V2-wpLoose"),
                            eleVeto = cms.bool(True),
-                           bjets = cms.InputTag("bjets")
+                           bjets = cms.InputTag("bjets"),
+                           tauId = cms.string("byDeepTau2017v2p1VSjetraw")
 )
 
 
