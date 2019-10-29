@@ -54,7 +54,7 @@ options.parseArguments()
 
 from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
 setupEgammaPostRecoSeq(process,
-                       era="2017-Nov17ReReco",
+                       era="2018-Prompt",
                        eleIDModules=[
                            "RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff",
 
@@ -80,7 +80,6 @@ updateJetCollection(
             ],
         postfix='NewDFTraining'
 )
-
 
 process.bTaggingSequence = cms.Sequence(
         process.patJetCorrFactorsNewDFTraining +
@@ -110,19 +109,20 @@ na.runTauID()
 
 if not isMC: # will use 80X
     from Configuration.AlCa.autoCond import autoCond
-    process.GlobalTag.globaltag = '102X_dataRun2_v8'
-    process.load('TauTagAndProbe.TauTagAndProbe.tagAndProbe_2017_cff')
+    # process.GlobalTag.globaltag = '102X_dataRun2_Sep2018ABC_v2'
+    process.GlobalTag.globaltag = '102X_dataRun2_Prompt_v13'
+    process.load('TauTagAndProbe.TauTagAndProbe.tagAndProbe_2018_cff')
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
-             "/store/data/Run2017D/SingleMuon/MINIAOD/31Mar2018-v1/00000/2AB0A664-EC39-E811-8A25-0612DC000281.root"
+              "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/F0A38EF6-D656-794D-9C8E-DCF533C98FFA.root"
         ),
     )
 else:
-    process.GlobalTag.globaltag = '102X_mc2017_realistic_v6' #MC 25 ns miniAODv2
-    process.load('TauTagAndProbe.TauTagAndProbe.MCanalysis_2017_cff')
+    process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v18' #MC 25 ns miniAODv2
+    process.load('TauTagAndProbe.TauTagAndProbe.MCanalysis_2018_cff')
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
-	     "/store/mc/RunIIFall17MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14-v1/910000/ECC11159-F647-E811-A157-001E67792510.root"
+             "/store/mc/RunIIAutumn18MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v1/00000/87F96FBB-7EAC-BC44-8CA9-9B5787ECD801.root"
         )
     )
 

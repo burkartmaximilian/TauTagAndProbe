@@ -110,7 +110,7 @@ na.runTauID()
 
 if not isMC: # will use 80X
     from Configuration.AlCa.autoCond import autoCond
-    process.GlobalTag.globaltag = '94X_dataRun2_v10'
+    process.GlobalTag.globaltag = '102X_dataRun2_nanoAOD_2016_v1'
     process.load('TauTagAndProbe.TauTagAndProbe.tagAndProbe_2016_cff')
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
@@ -118,7 +118,7 @@ if not isMC: # will use 80X
         ),
     )
 else:
-    process.GlobalTag.globaltag = '94X_mcRun2_asymptotic_v3' #MC 25 ns miniAODv2
+    process.GlobalTag.globaltag = '102X_mcRun2_asymptotic_v6' #MC 25 ns miniAODv2
     process.load('TauTagAndProbe.TauTagAndProbe.MCanalysis_2016_cff')
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
