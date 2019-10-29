@@ -46,7 +46,7 @@ done
 # Setup CMSSW.
 echo "[INFO] Setting up scram runtime environment.."
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-cmsenv
+eval `scramv1 runtime -sh`
 
 # Initialize grid-control.
 echo "[INFO] Initializing grid-control.."
@@ -54,13 +54,17 @@ export PATH=$PATH:${CMSSW_BASE}/src/grid-control:${CMSSW_BASE}/src/grid-control/
 
 echo "[INFO] Setting up proxy.."
 export X509_USER_PROXY=~/.globus/x509up
-voms-proxy-init -rfc --valid 192:00:00 --voms cms:/cms/dcms
+if [ `voms-proxy-info | awk '/timeleft/{print $NF}' | cut -d : -f 1` -lt 24 ]; then
+    echo "[INFO] No valid proxy or proxy with short lifetime found. Recreating a new one..."
+    voms-proxy-init -rfc --valid 192:00:00 --voms cms:/cms/dcms
+fi
 
+touch .lock
 while [ -f ".lock" ]
 do
     for CONF in ${CONFIGS[@]}
     do
-        go.py $CONF -m 8
+        go.py $CONF -m 1
     done
     echo "rm .lock"
     sleep 2

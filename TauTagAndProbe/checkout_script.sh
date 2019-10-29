@@ -1,11 +1,14 @@
 #!/usr/bin/bash
 
-NJOBS=$1
+NJOBS=$(grep -c ^processor /proc/cpuinfo)
+if [ ! "$1" == "" ]; then
+    NJOBS=$1
+fi
 
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-cmsrel CMSSW_10_2_16_patch1
-cd CMSSW_10_2_16_patch1/src/
-cmsenv
+scramv1 project CMSSW_10_2_17
+cd CMSSW_10_2_17/src/
+eval `scramv1 runtime -sh`
 
 git cms-init
 
