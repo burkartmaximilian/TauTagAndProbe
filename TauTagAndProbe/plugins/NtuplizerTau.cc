@@ -164,9 +164,13 @@ class NtuplizerTau : public edm::EDAnalyzer {
         float _hltL2CaloJetEta;
         float _hltL2CaloJetPhi;
         float _hltL2CaloJetIso;
+        float _hltL2CaloJetIsoPatatrack;
         float _hltL2CaloJetIsoPixPt;
         float _hltL2CaloJetIsoPixEta;
         float _hltL2CaloJetIsoPixPhi;
+        float _hltL2CaloJetIsoPixL1TauSeededPt;
+        float _hltL2CaloJetIsoPixL1TauSeededEta;
+        float _hltL2CaloJetIsoPixL1TauSeededPhi;
         float _hltPFTauTrackPt;
         float _hltPFTauTrackEta;
         float _hltPFTauTrackPhi;
@@ -227,6 +231,7 @@ class NtuplizerTau : public edm::EDAnalyzer {
         edm::EDGetTokenT<std::vector<PileupSummaryInfo>> _puTag;
         edm::EDGetTokenT<reco::CaloJetCollection> _hltL2CaloJet_ForIsoPix_Tag;
         edm::EDGetTokenT<reco::JetTagCollection> _hltL2CaloJet_ForIsoPix_IsoTag;
+        edm::EDGetTokenT<reco::JetTagCollection> _hltL2CaloJet_ForIsoPix_Patatrack_IsoTag;
 
         //!Contains the parameters
         tVParameterSet _parameters;
@@ -273,6 +278,7 @@ _VtxTag         (consumes<std::vector<reco::Vertex>>              (iConfig.getPa
 _puTag			(consumes<std::vector<PileupSummaryInfo>>		  (iConfig.getParameter<edm::InputTag>("puInfo"))),
 _hltL2CaloJet_ForIsoPix_Tag(consumes<reco::CaloJetCollection>     (iConfig.getParameter<edm::InputTag>("L2CaloJet_ForIsoPix_Collection"))),
 _hltL2CaloJet_ForIsoPix_IsoTag(consumes<reco::JetTagCollection>   (iConfig.getParameter<edm::InputTag>("L2CaloJet_ForIsoPix_IsoCollection"))),
+_hltL2CaloJet_ForIsoPix_Patatrack_IsoTag(consumes<reco::JetTagCollection>   (iConfig.getParameter<edm::InputTag>("L2CaloJet_ForIsoPix_Patatrack_IsoCollection"))),
 _filterPath                                                       (iConfig.getParameter<std::string>  ("filterPath"))
 {
 
@@ -484,9 +490,13 @@ void NtuplizerTau::Initialize() {
     _hltL2CaloJetEta = 666;
     _hltL2CaloJetPhi = 666;
     _hltL2CaloJetIso = -1;
+    _hltL2CaloJetIsoPatatrack = -1;
     _hltL2CaloJetIsoPixPt = -1;
     _hltL2CaloJetIsoPixEta = 666;
     _hltL2CaloJetIsoPixPhi = 666;
+    _hltL2CaloJetIsoPixL1TauSeededPt = -1;
+    _hltL2CaloJetIsoPixL1TauSeededEta = 666;
+    _hltL2CaloJetIsoPixL1TauSeededPhi = 666;
     _hltPFTauTrackPt = -1;
     _hltPFTauTrackEta = 666;
     _hltPFTauTrackPhi = 666;
@@ -625,9 +635,13 @@ void NtuplizerTau::beginJob()
     _tree -> Branch("hltL2CaloJetEta", &_hltL2CaloJetEta, "hltL2CaloJetEta/F");
     _tree -> Branch("hltL2CaloJetPhi", &_hltL2CaloJetPhi, "hltL2CaloJetPhi/F");
     _tree -> Branch("hltL2CaloJetIso", &_hltL2CaloJetIso, "hltL2CaloJetIso/F");
+    _tree -> Branch("hltL2CaloJetIsoPatatrack", &_hltL2CaloJetIsoPatatrack, "hltL2CaloJetIsoPatatrack/F");
     _tree -> Branch("hltL2CaloJetIsoPixPt",  &_hltL2CaloJetIsoPixPt,  "hltL2CaloJetIsoPixPt/F");
     _tree -> Branch("hltL2CaloJetIsoPixEta", &_hltL2CaloJetIsoPixEta, "hltL2CaloJetIsoPixEta/F");
     _tree -> Branch("hltL2CaloJetIsoPixPhi", &_hltL2CaloJetIsoPixPhi, "hltL2CaloJetIsoPixPhi/F");
+    _tree -> Branch("hltL2CaloJetIsoPixL1TauSeededPt",  &_hltL2CaloJetIsoPixL1TauSeededPt,  "hltL2CaloJetIsoPixL1TauSeededPt/F");
+    _tree -> Branch("hltL2CaloJetIsoPixL1TauSeededEta", &_hltL2CaloJetIsoPixL1TauSeededEta, "hltL2CaloJetIsoPixL1TauSeededEta/F");
+    _tree -> Branch("hltL2CaloJetIsoPixL1TauSeededPhi", &_hltL2CaloJetIsoPixL1TauSeededPhi, "hltL2CaloJetIsoPixL1TauSeededPhi/F");
     
     _tree -> Branch("hltPFTauTrackPt",  &_hltPFTauTrackPt,  "hltPFTauTrackPt/F");
     _tree -> Branch("hltPFTauTrackEta", &_hltPFTauTrackEta, "hltPFTauTrackEta/F");;
@@ -716,6 +730,7 @@ void NtuplizerTau::analyze(const edm::Event& iEvent, const edm::EventSetup& eSet
 
     edm::Handle< reco::CaloJetCollection > L2CaloJets_ForIsoPix_Handle;
     edm::Handle< reco::JetTagCollection > L2CaloJets_ForIsoPix_IsoHandle;
+    edm::Handle< reco::JetTagCollection > L2CaloJets_ForIsoPix_Patatrack_IsoHandle;
 
 
     if(_isMC)
@@ -730,6 +745,7 @@ void NtuplizerTau::analyze(const edm::Event& iEvent, const edm::EventSetup& eSet
     
     try {iEvent.getByToken(_hltL2CaloJet_ForIsoPix_Tag, L2CaloJets_ForIsoPix_Handle);}  catch (...) {;}
     try {iEvent.getByToken(_hltL2CaloJet_ForIsoPix_IsoTag, L2CaloJets_ForIsoPix_IsoHandle);}  catch (...) {;}
+    try {iEvent.getByToken(_hltL2CaloJet_ForIsoPix_Patatrack_IsoTag, L2CaloJets_ForIsoPix_Patatrack_IsoHandle);}  catch (...) {;}
 
 
 
@@ -813,6 +829,13 @@ void NtuplizerTau::analyze(const edm::Event& iEvent, const edm::EventSetup& eSet
 	      _hltL2CaloJetIsoPixPhi = obj.phi();
 	    }
 
+	    const std::vector<std::string>& L2CaloJetIsoPixL1TauSeeded_filters = {"hltL2TauIsoFilterL1TauSeeded"};
+	    if (this -> hasFilters(obj, L2CaloJetIsoPixL1TauSeeded_filters) && obj.pt()>_hltL2CaloJetIsoPixL1TauSeededPt){
+	      _hltL2CaloJetIsoPixL1TauSeededPt = obj.pt();
+	      _hltL2CaloJetIsoPixL1TauSeededEta = obj.eta();
+	      _hltL2CaloJetIsoPixL1TauSeededPhi = obj.phi();
+	    }
+
 	    const std::vector<std::string>& PFTauTrack_filters = {"hltPFTauTrack"};
 	    if (this -> hasFilters(obj, PFTauTrack_filters) && obj.pt()>_hltPFTauTrackPt){
 	      _hltPFTauTrackPt = obj.pt();
@@ -879,6 +902,21 @@ void NtuplizerTau::analyze(const edm::Event& iEvent, const edm::EventSetup& eSet
 	    _hltL2CaloJetEta = jet.first->eta();
 	    _hltL2CaloJetPhi = jet.first->phi();
 	    _hltL2CaloJetIso = jet.second;
+	  }
+
+      }
+
+    }
+    if(L2CaloJets_ForIsoPix_Handle.isValid() && L2CaloJets_ForIsoPix_Patatrack_IsoHandle.isValid()){
+
+      for (auto const &  jet : *L2CaloJets_ForIsoPix_Patatrack_IsoHandle){
+	edm::Ref<reco::CaloJetCollection> jetRef = edm::Ref<reco::CaloJetCollection>(L2CaloJets_ForIsoPix_Handle,jet.first.key());
+	
+	const float dR = deltaR (*tau, *(jet.first));
+	
+	if ( dR < 0.5 && jet.first->pt()>_hltL2CaloJetPt)
+	  {
+	    _hltL2CaloJetIsoPatatrack = jet.second;
 	  }
 
       }
