@@ -52,7 +52,7 @@ class TurnOnPlot:
         hDummy.SetAxisRange(0, 1.05, "Y")
         hDummy.SetXTitle(self.xTitle)
         #hDummy.SetYTitle("Test")
-        hDummy.SetYTitle("Efficiency")
+        hDummy.SetYTitle("L1 + HLT Efficiency")
 	hDummy.GetXaxis().SetMoreLogLabels()
         hDummy.Draw()
 
@@ -64,7 +64,7 @@ class TurnOnPlot:
         xpos  = 0.16
         ypos  = 0.95
 
-        CMSbox       = ROOT.TLatex  (xpos, ypos         , "#bf{CMS} #it{Preliminary}")
+        CMSbox       = ROOT.TLatex  (xpos, ypos         , "#bf{CMS} #it{Simulation}")
         extraTextBox = ROOT.TLatex  (xpos, ypos - 0.05 , "#it{Preliminary}")
         CMSbox.SetNDC()
         extraTextBox.SetNDC()
@@ -88,7 +88,7 @@ class TurnOnPlot:
         # lumi_num = lumi_num/1000. # from pb-1 to fb-1
         # lumi = "%.1f fb^{-1} (13 TeV)" % lumi_num
         #lumi = "5.8 fb^{-1} (13 TeV, 2017)"
-	lumi = self.lumi + "(13 TeV, 2017)"
+	lumi = self.lumi + "(14 TeV)"
         lumibox = ROOT.TLatex  (0.953, 0.95, lumi)
         lumibox.SetNDC()
         lumibox.SetTextAlign(31)
